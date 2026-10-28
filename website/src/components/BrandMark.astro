@@ -1,0 +1,26 @@
+---
+// The app's mark (djtoolkit/ui/widgets.py BrandMark): a tile with five waveform bars.
+interface Props {
+  size?: number;
+}
+const { size = 28 } = Astro.props;
+---
+
+<svg class="mark" width={size} height={size} viewBox="0 0 28 28" aria-hidden="true">
+  <rect width="28" height="28" rx="9"></rect>
+  <path d="M6.2 9.8v8.4M10.1 6.3v15.4M14 3.1v21.8M17.9 7.3v13.4M21.8 10.6v6.8"></path>
+</svg>
+
+<style>
+  .mark {
+    flex: none;
+  }
+  rect {
+    fill: var(--primary);
+  }
+  path {
+    stroke: var(--on-primary);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+  }
+</style>

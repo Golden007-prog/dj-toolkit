@@ -1,0 +1,19 @@
+{
+  "name": "dj-toolkit-website",
+  "description": "The DJ Toolkit landing page. See website/README.md.",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.23"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^7.4.2"
+  }
+}

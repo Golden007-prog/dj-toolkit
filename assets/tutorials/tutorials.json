@@ -1,0 +1,59 @@
+[
+  {
+    "id": "folder-structure",
+    "title": "Folder structure",
+    "status": "draft",
+    "recommendation": "One folder per genre or vibe, never more than two levels deep.",
+    "steps": [
+      "Music / House, Music / Techno, Music / Jungle …",
+      "Name files “Artist - Title”.",
+      "Keep acapellas in their own folder.",
+      "Move and rename files before importing to rekordbox, not after."
+    ]
+  },
+  {
+    "id": "folders-to-rekordbox",
+    "title": "Local folders → rekordbox",
+    "status": "draft",
+    "recommendation": "Import your whole music folder once, then only re-import when you add tracks.",
+    "steps": [
+      "Find your music folder in rekordbox's file browser.",
+      "Right-click it and choose Import Folder.",
+      "Build playlists from your genre folders."
+    ]
+  },
+  {
+    "id": "rekordbox-to-usb",
+    "title": "rekordbox → USB",
+    "status": "draft",
+    "recommendation": "Export playlists to the USB, not the whole library.",
+    "steps": [
+      "Format the USB as FAT32 or exFAT (check your player's manual).",
+      "Plug it in; it appears under Devices in rekordbox.",
+      "Drag your playlists onto it.",
+      "Eject it from rekordbox before pulling it out."
+    ]
+  },
+  {
+    "id": "acapella-prep",
+    "title": "Acapellas you can beatmatch",
+    "status": "draft",
+    "recommendation": "Give every acapella a count-in so it lands on the downbeat first time.",
+    "steps": [
+      "Acapella prep: drop the file in.",
+      "Lock the grid at the chorus: click four beats, loop them, check the click.",
+      "Click where the vocal comes in, then export."
+    ]
+  },
+  {
+    "id": "spotify-sync",
+    "title": "Spotify playlists from folders",
+    "status": "draft",
+    "recommendation": "One folder, one Spotify playlist. Always preview before you sync.",
+    "steps": [
+      "Link Spotify with the setup guide on the Spotify sync page.",
+      "Pick your music folder.",
+      "Preview, then Sync playlists."
+    ]
+  }
+]

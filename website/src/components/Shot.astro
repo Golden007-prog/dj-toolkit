@@ -1,0 +1,34 @@
+---
+// A real screenshot of the app, from tools/screenshots.py --site, in the look the page is showing.
+// Pass `look` to pin one look (both are shown side by side in the "Booth or Daylight" section).
+import { asset } from "../site";
+
+interface Props {
+  name: "acapella" | "acapella-start" | "sync" | "tutorials";
+  alt: string;
+  caption?: string;
+  eager?: boolean;
+  look?: "booth" | "daylight";
+  class?: string;
+}
+
+const { name, alt, caption, eager = false, look, class: className } = Astro.props;
+const looks = look ? [look] : (["booth", "daylight"] as const);
+---
+
+<figure class:list={["shot", className, { pinned: look }]}>
+  {
+    looks.map((l) => (
+      <img
+        class={look ? undefined : `for-${l}`}
+        src={asset(`screens/${name}-${l}.webp`)}
+        alt={alt}
+        width="2640"
+        height="1720"
+        loading={eager ? "eager" : "lazy"}
+        decoding="async"
+      />
+    ))
+  }
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>

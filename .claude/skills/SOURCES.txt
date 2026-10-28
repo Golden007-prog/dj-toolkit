@@ -1,0 +1,13 @@
+frontend-design  <-  github.com/anthropics/skills @ dbd4588 2026-10-09
+ui-ux-pro-max  <-  github.com/nextlevelbuilder/ui-ux-pro-max-skill @ 28b3b8d 2026-10-26
+design-taste-frontend  <-  github.com/Leonxlnx/taste-skill @ 12af471 2026-10-25
+impeccable  <-  github.com/pbakaus/impeccable @ d34c87e 2026-10-27
+[impeccable installed WITHOUT scripts/ (no binary download, no hooks, no live server). taste-skill scripts exist but are not run: this is a Qt app.]
+
+=== Round 2: UX writing / persona skills (installed 2026-10-27) ===
+ux-writing  <-  github.com/content-designer/ux-writing-skill @ 98cacde 2026-05-26
+ux-microcopy-audit  <-  github.com/markj81/ux-writing @ 4e547bc 2026-03-15
+ux-copy, user-research  <-  github.com/anthropics/knowledge-work-plugins (design plugin) @ c75fda0 2026-10-27
+persona-* skills  <-  github.com/DurdeuVlad/persona-write @ 3bc4d4a 2026-10-06
+[Markdown only. persona-write's scripts/ (proofread.py) NOT installed. anthropics .mcp.json NOT installed.
+ claude-persona (takechanman1228) was REJECTED: it spawns parallel paid 'claude -p' subprocesses via Python scripts + pip install.]

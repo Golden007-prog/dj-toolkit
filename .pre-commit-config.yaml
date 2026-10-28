@@ -1,0 +1,28 @@
+# Fast checks on every commit, after a one-time `.venv\Scripts\pre-commit install`.
+# CI runs these plus the full test suite (python tools/check.py), so skipping them only delays the feedback.
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.3 # keep in step with ruff in requirements-dev.txt
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+        args: [--maxkb=800]
+      - id: check-case-conflict
+      - id: check-illegal-windows-names
+      - id: check-merge-conflict
+      - id: check-json
+      - id: check-toml
+      - id: check-yaml
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: [--fix=lf]
+        exclude: \.(bat|cmd|ps1)$
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]

@@ -1,0 +1,31 @@
+---
+// A drawn arrow in the app's icon style (24 grid, round stroke). Text arrows can come out as colour emoji on Windows.
+interface Props {
+  down?: boolean;
+}
+const { down = false } = Astro.props;
+---
+
+<svg class:list={["arrow", { down }]} viewBox="0 0 24 24" aria-hidden="true">
+  <path d={down ? "M12 5v14M6 13l6 6 6-6" : "M5 12h14M13 6l6 6-6 6"}></path>
+</svg>
+
+<style>
+  .arrow {
+    width: 18px;
+    height: 18px;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 160ms var(--ease);
+  }
+  :global(a:hover) > .arrow {
+    transform: translateX(4px);
+  }
+  :global(a:hover) > .arrow.down {
+    transform: translateY(3px);
+  }
+</style>

@@ -1,0 +1,408 @@
+---
+// The page's one live thing: tap four beats and the grid locks, the way it does in the app (a straight-line fit
+// through four beats, like djtoolkit/audio/align.fit_grid). "Hear the count-in" plays four clicks, then a note on
+// the one. Without JavaScript it shows a worked example at 124 BPM.
+const SLOTS = 8; // beats in view: the four you tap, the one, and three after it
+const x = (k: number) => ((k + 0.5) / SLOTS) * 100;
+
+// A drawn vocal that comes in on the one (beat 4 counting from 0). Deterministic, so the build never changes.
+let seed = 11;
+const rand = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+const beatW = 1000 / SLOTS;
+const start = x(4) * 10;
+const notes = [4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5].filter((b, i) => i < 2 || rand() > 0.28);
+const amp = (px: number) => {
+  let a = 0;
+  for (const b of notes) {
+    const t = (px - (b + 0.5) * beatW) / beatW; // beats since this note started
+    const len = b % 1 ? 0.42 : 0.85;
+    if (t >= 0 && t < len) {
+      const attack = Math.min(1, t / 0.03);
+      const release = Math.min(1, (len - t) / 0.12);
+      a = Math.max(a, attack * release * (0.62 + 0.38 * Math.exp(-t * 4)) * (0.82 + 0.18 * rand()));
+    }
+  }
+  return a * 86;
+};
+const cols: [number, number][] = [];
+for (let px = start; px <= 1000; px += 3) cols.push([px, amp(px)]);
+const wave =
+  `M${start},100 ` +
+  cols.map(([px, a]) => `L${px.toFixed(1)},${(100 - a).toFixed(1)}`).join(" ") +
+  " " +
+  [...cols].reverse().map(([px, a]) => `L${px.toFixed(1)},${(100 + a).toFixed(1)}`).join(" ") +
+  " Z";
+---
+
+<div class="stage" data-tap>
+  <div class="top">
+    <p class="bpm"><span data-bpm>124.0</span><span class="unit">BPM</span></p>
+    <p class="status" data-status aria-live="polite">An example at 124 BPM: four beats of count-in, then the vocal.</p>
+  </div>
+
+  <div class="lane" aria-hidden="true">
+    <span class="lane-countin" style={`left:${x(0)}%;width:${x(4) - x(0)}%`}></span>
+    <svg class="wave" viewBox="0 0 1000 200" preserveAspectRatio="none"><path d={wave}></path></svg>
+    {[0, 1, 2, 3, 5, 6, 7].map((k) => <span class="beat" style={`left:${x(k)}%`} />)}
+    {
+      [0, 1, 2, 3].map((i) => (
+        <span class="marker" data-marker style={`left:${x(i)}%`}>
+          <b>{i + 1}</b>
+        </span>
+      ))
+    }
+    <span class="one" data-one style={`left:${x(4)}%`}><b>Vocal</b></span>
+    <span class="playhead" data-playhead></span>
+  </div>
+
+  <div class="controls" data-controls hidden>
+    <button class="tap" type="button" data-tap-button aria-describedby="tap-help">Tap</button>
+    <button class="stage-button" type="button" data-play>Hear the count-in</button>
+    <button class="stage-button quiet" type="button" data-reset>Start again</button>
+  </div>
+</div>
+<p class="help" id="tap-help">
+  Tap along with a song you know: the button, the space bar, or <kbd>B</kbd> as in the app. The grid locks on your
+  fourth tap.
+</p>
+
+<style>
+  .stage {
+    display: grid;
+    gap: clamp(20px, 2.4vw, 32px);
+    padding: clamp(20px, 3vw, 36px);
+    border-radius: var(--radius);
+    background: var(--stage);
+    color: var(--stage-ink);
+    outline: 1px solid var(--stage-edge);
+  }
+  .top {
+    display: grid;
+    gap: 12px;
+  }
+  .bpm {
+    font-family: var(--font-numbers);
+    font-size: clamp(3.25rem, 6.4vw, 5.75rem);
+    font-weight: 600;
+    line-height: 0.9;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .unit {
+    margin-left: 0.25em;
+    font-size: 0.4em;
+    color: var(--stage-muted);
+  }
+  .status {
+    min-height: 3.1em; /* two lines, so the panel doesn't jump as the message changes */
+    max-width: 52ch;
+    color: var(--stage-muted);
+  }
+  .lane {
+    position: relative;
+    height: clamp(150px, 17vw, 210px);
+    border-radius: 10px;
+    background: var(--stage-raised);
+    overflow: hidden;
+  }
+  .lane-countin {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background: color-mix(in srgb, var(--stage-cue) 14%, transparent);
+  }
+  .wave {
+    position: absolute;
+    inset: 22px 0 6px;
+    width: 100%;
+    height: calc(100% - 28px);
+  }
+  .wave path {
+    fill: var(--stage-data);
+  }
+  .beat,
+  .marker,
+  .one,
+  .playhead {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    margin-left: -1px;
+  }
+  .beat {
+    background: color-mix(in srgb, var(--stage-line) 55%, transparent);
+  }
+  .marker {
+    background: var(--stage-ink);
+    transition: left 220ms var(--ease);
+  }
+  .one {
+    width: 3px;
+    background: var(--stage-cue);
+  }
+  .marker b,
+  .one b {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    translate: -50% 0;
+    padding: 1px 7px;
+    border-radius: 6px;
+    background: var(--stage-ink);
+    color: var(--stage);
+    font-family: var(--font-numbers);
+    font-size: 0.8rem;
+    font-weight: 600;
+    line-height: 1.5;
+    transition: scale 120ms var(--ease);
+  }
+  .one b {
+    background: var(--stage-cue);
+    color: var(--on-cue);
+  }
+  .marker.lit b,
+  .one.lit b {
+    scale: 1.25;
+  }
+  .marker[data-off] {
+    opacity: 0;
+  }
+  .playhead {
+    left: 0;
+    opacity: 0;
+    background: var(--stage-ink);
+  }
+  .playhead.on {
+    opacity: 1;
+  }
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+  .controls[hidden] {
+    display: none;
+  }
+  .tap,
+  .stage-button {
+    min-height: 48px;
+    border: 0;
+    border-radius: 999px;
+    font: inherit;
+    font-weight: 650;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition:
+      transform 120ms var(--ease),
+      background-color 160ms var(--ease);
+  }
+  .tap {
+    min-width: 168px;
+    min-height: 64px;
+    padding: 0 36px;
+    background: var(--stage-ink);
+    color: var(--stage);
+    font-size: 1.25rem;
+  }
+  .tap:active,
+  .tap.hit {
+    transform: scale(0.95);
+  }
+  .stage-button {
+    padding: 0 22px;
+    background: var(--stage-raised);
+    color: var(--stage-ink);
+  }
+  .stage-button:hover {
+    background: var(--stage-hover);
+  }
+  .stage-button:disabled {
+    color: var(--stage-muted);
+    cursor: default;
+  }
+  .stage-button.quiet {
+    background: transparent;
+  }
+  .stage :focus-visible {
+    outline-color: var(--stage-ink);
+  }
+  .help {
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: var(--size-small);
+  }
+  kbd {
+    padding: 1px 7px;
+    border-radius: 5px;
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+    font-weight: 650;
+  }
+  @media (max-width: 560px) {
+    .tap {
+      flex: 1 0 100%;
+    }
+  }
+</style>
+
+<script>
+  const SLOTS = 8;
+  const EXAMPLE = { anchor: 0, period: 60 / 124, error: 0 };
+  const x = (k: number) => ((k + 0.5) / SLOTS) * 100;
+
+  const root = document.querySelector<HTMLElement>("[data-tap]");
+  if (root) {
+    const q = <T extends Element>(s: string) => root.querySelector<T>(s)!;
+    const bpmText = q<HTMLElement>("[data-bpm]");
+    const status = q<HTMLElement>("[data-status]");
+    const tapButton = q<HTMLButtonElement>("[data-tap-button]");
+    const play = q<HTMLButtonElement>("[data-play]");
+    const reset = q<HTMLButtonElement>("[data-reset]");
+    const one = q<HTMLElement>("[data-one]");
+    const head = q<HTMLElement>("[data-playhead]");
+    const markers = [...root.querySelectorAll<HTMLElement>("[data-marker]")];
+    q<HTMLElement>("[data-controls]").hidden = false;
+
+    let taps: number[] = [];
+    let grid = EXAMPLE;
+    let audio: AudioContext | null = null;
+    let playing = false;
+
+    const say = (text: string) => (status.textContent = text);
+    const showBpm = (period: number) => (bpmText.textContent = (60 / period).toFixed(1));
+
+    /** Least squares through taps at beat 0, 1, 2 ...: the same model as align.fit_grid in the app. */
+    function fit(times: number[]) {
+      const n = times.length;
+      const mk = (n - 1) / 2;
+      const mt = times.reduce((a, b) => a + b, 0) / n;
+      let sxy = 0;
+      let sxx = 0;
+      times.forEach((t, k) => {
+        sxy += (k - mk) * (t - mt);
+        sxx += (k - mk) ** 2;
+      });
+      const period = sxy / sxx;
+      const anchor = mt - period * mk;
+      const error = Math.max(...times.map((t, k) => Math.abs(t - (anchor + k * period))));
+      return { anchor, period, error };
+    }
+
+    function place(times: number[], g = grid) {
+      markers.forEach((m, k) => {
+        if (k >= times.length) return m.setAttribute("data-off", "");
+        m.removeAttribute("data-off");
+        const slip = Math.max(-0.45, Math.min(0.45, (times[k] - (g.anchor + k * g.period)) / g.period));
+        m.style.left = `${x(k + slip)}%`;
+      });
+    }
+
+    function tap() {
+      const now = performance.now() / 1000;
+      if (taps.length >= 4 || (taps.length && now - taps[taps.length - 1] > 2)) taps = []; // a pause starts over
+      taps.push(now);
+      tapButton.classList.remove("hit");
+      void tapButton.offsetWidth;
+      tapButton.classList.add("hit");
+      if (taps.length === 1) {
+        markers.forEach((m, k) => (k ? m.setAttribute("data-off", "") : m.removeAttribute("data-off")));
+        markers[0].style.left = `${x(0)}%`;
+        bpmText.textContent = "...";
+        play.disabled = true;
+        return say("Three more.");
+      }
+      const g = fit(taps);
+      place(taps, g);
+      showBpm(g.period);
+      if (taps.length < 4) return say(taps.length === 2 ? "Two more." : "One more.");
+      const bpm = 60 / g.period;
+      if (bpm < 60 || bpm > 200) {
+        taps = [];
+        grid = EXAMPLE;
+        return say(`That reads ${Math.round(bpm)} BPM. Tap once on every beat, then try again.`);
+      }
+      grid = g;
+      play.disabled = false;
+      const ms = Math.round(g.error * 1000);
+      say(
+        ms <= 40
+          ? `Locked at ${bpm.toFixed(1)} BPM. Your taps sat within ${ms} ms of the grid.`
+          : `Locked at ${bpm.toFixed(1)} BPM, but your taps wandered by up to ${ms} ms. Try again for a tighter grid.`,
+      );
+    }
+
+    function click(ctx: AudioContext, at: number, accent: boolean) {
+      const osc = new OscillatorNode(ctx, { frequency: accent ? 1600 : 1000 });
+      const gain = new GainNode(ctx, { gain: 0 });
+      gain.gain.setValueAtTime(0.5, at);
+      gain.gain.setTargetAtTime(0, at, 1 / 90); // the app's click: a short sine that dies away
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(at);
+      osc.stop(at + 0.12);
+    }
+
+    function vocal(ctx: AudioContext, at: number, length: number) {
+      const out = new GainNode(ctx, { gain: 0 });
+      out.gain.setValueAtTime(0, at);
+      out.gain.linearRampToValueAtTime(0.16, at + 0.02);
+      out.gain.setTargetAtTime(0.1, at + 0.05, 0.3);
+      out.gain.setTargetAtTime(0, at + length, 0.08);
+      const vibrato = new OscillatorNode(ctx, { frequency: 5.4 });
+      const depth = new GainNode(ctx, { gain: 9 });
+      vibrato.connect(depth);
+      out.connect(ctx.destination);
+      [220, 440, 660].forEach((f, i) => {
+        const osc = new OscillatorNode(ctx, { frequency: f, type: i ? "sine" : "triangle" });
+        const level = new GainNode(ctx, { gain: [1, 0.35, 0.12][i] });
+        depth.connect(osc.detune);
+        osc.connect(level).connect(out);
+        osc.start(at);
+        osc.stop(at + length + 0.6);
+      });
+      vibrato.start(at);
+      vibrato.stop(at + length + 0.6);
+    }
+
+    async function hear() {
+      if (playing) return;
+      audio ??= new AudioContext();
+      await audio.resume();
+      playing = true;
+      play.disabled = true;
+      const p = grid.period;
+      const t0 = audio.currentTime + 0.12;
+      for (let k = 0; k < 4; k++) click(audio, t0 + k * p, k === 0);
+      vocal(audio, t0 + 4 * p, 1.6 * p);
+      head.classList.add("on");
+      const frame = () => {
+        const beat = (audio!.currentTime - t0) / p;
+        head.style.left = `${x(Math.max(-0.5, beat))}%`;
+        markers.forEach((m, k) => m.classList.toggle("lit", beat >= k && beat < k + 0.25));
+        one.classList.toggle("lit", beat >= 4 && beat < 4.5);
+        if (beat < 7.4) return requestAnimationFrame(frame);
+        head.classList.remove("on");
+        playing = false;
+        play.disabled = false;
+      };
+      requestAnimationFrame(frame);
+    }
+
+    tapButton.addEventListener("pointerdown", (e) => e.button === 0 && tap());
+    tapButton.addEventListener("click", (e) => e.detail === 0 && tap()); // keyboard and screen readers
+    root.addEventListener("keydown", (e) => {
+      if (e.key.toLowerCase() === "b" && !e.repeat) tap();
+    });
+    play.addEventListener("click", hear);
+    reset.addEventListener("click", () => {
+      taps = [];
+      grid = EXAMPLE;
+      place([0, EXAMPLE.period, 2 * EXAMPLE.period, 3 * EXAMPLE.period], EXAMPLE);
+      showBpm(EXAMPLE.period);
+      play.disabled = false;
+      say("Back to the example at 124 BPM. Tap four beats to lock your own.");
+    });
+  }
+</script>

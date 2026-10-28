@@ -1,0 +1,59 @@
+---
+import "../styles/global.css";
+import { asset } from "../site";
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const image = new URL(asset("og.jpg"), Astro.site).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href={asset("favicon.svg")} type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script is:inline>
+      // Booth or Daylight: a look picked here before wins; otherwise the page follows the system.
+      try {
+        const look = localStorage.getItem("djtoolkit-look");
+        if (look === "dark" || look === "light") document.documentElement.dataset.theme = look;
+      } catch {}
+      document.documentElement.classList.add("js");
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to the content</a>
+    <slot />
+    <script>
+      // Each section rises into place once, as it scrolls into view.
+      const sections = document.querySelectorAll<HTMLElement>("[data-reveal]");
+      sections.forEach((section) => [...section.children].forEach((child, i) => (child as HTMLElement).style.setProperty("--i", String(i))));
+      const show = (el: Element) => el.classList.add("in");
+      if (!("IntersectionObserver" in window)) {
+        sections.forEach(show);
+      } else {
+        const io = new IntersectionObserver(
+          (entries) => entries.forEach((e) => e.isIntersecting && (show(e.target), io.unobserve(e.target))),
+          { rootMargin: "0px 0px -12% 0px" },
+        );
+        sections.forEach((s) => io.observe(s));
+        setTimeout(() => sections.forEach(show), 6000); // never leave anything hidden
+      }
+    </script>
+  </body>
+</html>

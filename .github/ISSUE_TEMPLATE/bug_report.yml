@@ -1,0 +1,44 @@
+name: Bug report
+description: Something doesn't work the way it should.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting. One problem per report, please. A screenshot helps a lot.
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where
+      options: [Acapella prep, Spotify sync, Tutorials, Installing or starting the app, The website, Somewhere else]
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what you expected
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to make it happen again
+      placeholder: |
+        1. Open an acapella (an MP3, about 3 minutes)
+        2. Click four beats at the chorus
+        3. ...
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version
+      placeholder: Windows 11 24H2
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: Run `git log -1 --format=%h` in the on-the-one folder, or say the date you downloaded it.
+  - type: textarea
+    id: log
+    attributes:
+      label: The message or activity log text
+      description: Remove anything personal first, like folder paths with your name in them.
+      render: text

@@ -1,0 +1,230 @@
+---
+import tutorials from "../../../assets/tutorials/tutorials.json";
+import Arrow from "../components/Arrow.astro";
+import BrandMark from "../components/BrandMark.astro";
+import LookSwitch from "../components/LookSwitch.astro";
+import Shot from "../components/Shot.astro";
+import TapTempo from "../components/TapTempo.astro";
+import Base from "../layouts/Base.astro";
+import { asset, links } from "../site";
+import "../styles/page.css";
+
+const folders = ["House", "Disco", "Techno", "Acapellas"];
+---
+
+<Base
+  title="DJ Toolkit: land every acapella on the one"
+  description="A free, open-source Windows app for DJ prep. Lock the grid on four beats, add a count-in, and the vocal comes in on the downbeat. Your music folders become Spotify playlists, too."
+>
+  <header class="bar wrap">
+    <a class="brand" href={asset("")}><BrandMark /><span>DJ Toolkit</span></a>
+    <nav aria-label="Sections">
+      <a href="#lock">How it works</a>
+      <a href="#spotify">Spotify sync</a>
+      <a href="#tutorials">Tutorials</a>
+      <a href="#build">Contribute</a>
+    </nav>
+    <div class="bar-end">
+      <LookSwitch />
+      <a class="button bar-button" href={links.repo}>GitHub</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <h1 id="hero-title">Land every acapella on the one.</h1>
+      <p class="lead hero-lead">
+        DJ Toolkit is a free Windows app for DJ prep. Mark four beats at the chorus, add a count-in, and the vocal comes
+        in on the downbeat, first time.
+      </p>
+      <div class="actions hero-actions">
+        <a class="button" href={links.run}>Get it on GitHub</a>
+        <a class="arrow-link" href="#lock">Try the four-beat lock <Arrow down /></a>
+      </div>
+      <p class="hero-meta small muted">
+        Free and open source · Windows 10 and 11 · Also turns your music folders into Spotify playlists
+      </p>
+    </section>
+
+    <div class="hero-stage wrap">
+      <div class="hero-countin" role="img" aria-label="A count-in: four beats, then the downbeat">
+        <span></span><span></span><span></span><span></span><span class="the-one"></span>
+        <span class="hero-countin-words small muted" aria-hidden="true">Four beats, then the one.</span>
+      </div>
+      <Shot
+        name="acapella"
+        eager
+        class="hero-shot"
+        alt="DJ Toolkit's Acapella prep page: a vocal waveform with four numbered beat markers at the chorus and the tempo locked at 124.00 BPM."
+      />
+    </div>
+
+    <section id="lock" class="band" aria-labelledby="lock-title">
+      <div class="wrap split" data-reveal>
+        <h2 id="lock-title">Four beats lock the grid.</h2>
+        <p class="lead">
+          Acapellas have no drums, so tempo detectors guess. DJ Toolkit suggests four beats at the loudest part, loops
+          them with a click, and you drag each one until the click sits on the beat.
+        </p>
+        <p>Four careful beats set the tempo and the phase for the whole track. Try the idea here.</p>
+        <dl class="keys">
+          <div><dt>Space</dt><dd>plays the loop, with a click on the grid</dd></div>
+          <div><dt>B</dt><dd>taps beats along with the music</dd></div>
+          <div><dt>Drag the top strip</dt><dd>scratches back and forth, so you hear where you are</dd></div>
+          <div><dt>Half, Double</dt><dd>fix a tempo read at the wrong speed</dd></div>
+        </dl>
+        <div class="side"><TapTempo /></div>
+      </div>
+    </section>
+
+    <section id="start" class="wrap split flip section" data-reveal aria-labelledby="start-title">
+      <h2 id="start-title">Then set the start.</h2>
+      <p class="lead">
+        Click the beat where the vocal comes in. It snaps to the grid, and the beats before it become the count-in: a
+        click, silence, or your own sample.
+      </p>
+      <p>
+        Preview plays the count-in, then the vocal. Export saves a new file with the tempo in its name and in its tags,
+        ready for rekordbox and the USB.
+      </p>
+      <dl class="facts-list">
+        <div>
+          <dt>Saves as</dt>
+          <dd class="file-name">Demo vocal - 124bpm.wav</dd>
+        </div>
+        <div>
+          <dt>Formats</dt>
+          <dd>WAV and FLAC at 24-bit, MP3 at 320 kbps</dd>
+        </div>
+        <div>
+          <dt>Remembers</dt>
+          <dd>The four beats and the start, for every file you've worked on</dd>
+        </div>
+      </dl>
+      <Shot
+        name="acapella-start"
+        class="side"
+        alt="Step two in DJ Toolkit: the amber start marker on the first beat of the vocal, with the four-beat count-in before it."
+      />
+    </section>
+
+    <section id="spotify" class="band band-surface" aria-labelledby="spotify-title">
+      <div class="wrap spotify-section" data-reveal>
+        <h2 id="spotify-title">Your folders, as Spotify playlists.</h2>
+        <p class="lead">
+          Point it at your music folder. Every folder inside becomes a private Spotify playlist, so you can dig on your
+          phone and play from your drive.
+        </p>
+        <table class="folders">
+          <caption class="visually-hidden">Folders on your drive, and the playlists they become</caption>
+          <thead>
+            <tr><th scope="col">On your drive</th><th scope="col">On Spotify</th></tr>
+          </thead>
+          <tbody>
+            {
+              folders.map((f) => (
+                <tr>
+                  <td>Music\{f}</td>
+                  <td>Local: {f}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+        <Shot
+          name="sync"
+          class="spotify-shot"
+          alt="DJ Toolkit's Spotify sync page: the music folder, the playlist name, match strictness, and the Preview changes button."
+        />
+        <div class="three">
+          <p>
+            <strong>Preview first.</strong> Nothing changes on Spotify until you choose Sync playlists, and that stays off
+            until you've seen the preview.
+          </p>
+          <p><strong>Your music isn't touched.</strong> DJ Toolkit reads tags and file names, and nothing else.</p>
+          <p>
+            <strong>Each track is searched once.</strong> Matches are remembered, so a big library fits inside Spotify's
+            daily limit.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="tutorials" class="wrap section guides-section" data-reveal aria-labelledby="tutorials-title">
+      <h2 id="tutorials-title">Short guides you can argue with.</h2>
+      <p class="lead">
+        One recommendation each, then two to four steps. Think one is wrong? Post a question or a challenge under it,
+        anonymously.
+      </p>
+      <ul class="guides">
+        {
+          tutorials.map((t) => (
+            <li>
+              <h3>{t.title}</h3>
+              <p>{t.recommendation}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section id="looks" class="band band-stage" aria-labelledby="looks-title">
+      <div class="wrap looks" data-reveal>
+        <h2 id="looks-title">Booth or Daylight.</h2>
+        <p class="lead">
+          Calm and dark for clubs and late-night prep. Bright and high-contrast for a laptop in the sun. This page
+          switches too.
+        </p>
+        <div class="looks-switch"><LookSwitch label="Look of this page" /></div>
+        <div class="pair">
+          <Shot name="tutorials" look="booth" caption="Booth" alt="The Tutorials page in Booth, the dark look." />
+          <Shot name="tutorials" look="daylight" caption="Daylight" alt="The Tutorials page in Daylight, the light look." />
+        </div>
+      </div>
+    </section>
+
+    <section id="build" class="band" aria-labelledby="build-title">
+      <div class="wrap split" data-reveal>
+        <h2 id="build-title">Open source, and easy to work on.</h2>
+        <p class="lead">
+          MIT licence, Python and Qt. About 160 automated tests run in a minute, with no sound card and no network.
+        </p>
+        <p>
+          Working with an AI coding agent? <code>AGENTS.md</code> gives it the rules and the commands, and guardrail tests
+          catch it when it breaks one: a hard-coded colour, a word the app doesn't use, a secret in a commit.
+        </p>
+        <ul class="link-list">
+          <li><a class="arrow-link" href={links.contributing}>How to contribute <Arrow /></a></li>
+          <li><a class="arrow-link" href={links.vibe}>Vibe coding on DJ Toolkit <Arrow /></a></li>
+          <li><a class="arrow-link" href={links.roadmap}>What's next <Arrow /></a></li>
+        </ul>
+        <pre class="side code" aria-label="Set it up on Windows"><code>git clone {links.clone}
+cd on-the-one
+py -3.12 -m venv .venv
+.venv\Scripts\pip install -r requirements-dev.txt
+check.bat</code></pre>
+      </div>
+    </section>
+
+    <section id="status" class="wrap section status-section" data-reveal aria-labelledby="status-title">
+      <h2 id="status-title">Early, and honest about it.</h2>
+      <p class="lead">
+        It's tested with generated audio and about 160 automated tests. It hasn't met many real acapellas or a live
+        Spotify account yet.
+      </p>
+      <p>If you play out, try it on your own music and say what felt off. No code needed.</p>
+      <div class="actions">
+        <a class="button" href={links.feedback}>Share DJ feedback</a>
+        <a class="arrow-link" href={links.guide}>Read the user guide <Arrow /></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot wrap">
+    <p class="wordmark" aria-hidden="true">DJ Toolkit</p>
+    <div class="foot-row small muted">
+      <p>MIT licence. An independent project, not affiliated with Spotify or AlphaTheta (rekordbox).</p>
+      <p><a href={links.repo}>Source on GitHub</a> · <a href={links.licence}>Licence</a></p>
+    </div>
+  </footer>
+</Base>

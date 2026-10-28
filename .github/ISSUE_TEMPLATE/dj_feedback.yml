@@ -1,0 +1,32 @@
+name: DJ feedback
+description: You tried it on real music, or you'd do a tutorial differently. No coding needed.
+labels: ["dj feedback"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The tutorials, the wording and the idea of who the app is for are drafts, written to be argued with.
+        Tell us what a working DJ would actually do.
+  - type: dropdown
+    id: about
+    attributes:
+      label: About
+      options: [Acapella prep, Spotify sync, A tutorial, The words the app uses, Something that's missing]
+    validations:
+      required: true
+  - type: textarea
+    id: tried
+    attributes:
+      label: What you tried
+      description: The music (genre, file type), your setup (rekordbox, CDJs, XDJs, controller), what you were doing.
+  - type: textarea
+    id: off
+    attributes:
+      label: What felt off, or what you'd do instead, and why
+    validations:
+      required: true
+  - type: dropdown
+    id: gigs
+    attributes:
+      label: How often do you play out?
+      options: [Most weeks, A few times a month, Now and then, I'm still practising]

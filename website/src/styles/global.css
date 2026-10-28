@@ -1,0 +1,376 @@
+/* DJ Toolkit website.
+   Every colour is a token, and the values are the app's own (djtoolkit/ui/theme.py, Mono accent), so the site and
+   the app are one look and the app's contrast tests cover these pairs. Amber means the downbeat, and nothing else. */
+
+:root {
+  color-scheme: light;
+  /* Daylight */
+  --ground: #ebe7de;
+  --ground-raised: #f3f0e8;
+  --surface: #fcfbf8;
+  --ink: #1d1a15;
+  --muted: #5b564b;
+  --line: #ded9cc;
+  --line-strong: #7f7a6e;
+  --primary: #1d1a15;
+  --primary-hover: #3b362d;
+  --on-primary: #f6f3ec;
+  --cue: #c27400;
+  --selection: #d8d2c4;
+  --shadow-rgb: 60 45 20;
+  --shadow-alpha: 0.2;
+  --stage-edge: transparent;
+
+  /* The stage: always dark, like the waveform in the app */
+  --stage: #121110;
+  --stage-raised: #1c1b19;
+  --stage-ink: #f4f1ea;
+  --stage-muted: #a8a298;
+  --stage-data: #d6d0c4;
+  --stage-line: #78736a;
+  --stage-cue: #fbbf24;
+  --stage-hover: #2a2824;
+  --on-cue: #1a1000; /* dark text on amber, as in the app */
+
+  --font-text: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-numbers: Bahnschrift, "DIN Alternate", Barlow, "Roboto Condensed", "Arial Narrow", sans-serif;
+
+  --size-h1: clamp(2.6rem, 7.4vw, 7.25rem);
+  --size-h2: clamp(2.1rem, 4.6vw, 4.5rem);
+  --size-lead: clamp(1.15rem, 1.45vw, 1.4rem);
+  --size-body: 1.0625rem;
+  --size-small: 0.9375rem;
+
+  --gutter: clamp(16px, 3vw, 40px);
+  --max: 1320px;
+  --gap: clamp(112px, 12vw, 192px);
+  --radius: 14px;
+  --radius-control: 8px;
+
+  --beat: 484ms; /* one beat at 124 BPM: the page keeps the demo's tempo */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Booth, when the system is dark and Daylight wasn't picked */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground: #0e0d0c;
+    --ground-raised: #131211;
+    --surface: #181715;
+    --ink: #f4f1ea;
+    --muted: #a8a298;
+    --line: #2e2b27;
+    --line-strong: #78736a;
+    --primary: #f4f1ea;
+    --primary-hover: #e0dbd0;
+    --on-primary: #1d1a15;
+    --cue: #fbbf24;
+    --selection: #46423b;
+    --shadow-rgb: 0 0 0;
+    --shadow-alpha: 0.6;
+    --stage-edge: #2e2b27;
+  }
+}
+
+/* Booth, picked by hand */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground: #0e0d0c;
+  --ground-raised: #131211;
+  --surface: #181715;
+  --ink: #f4f1ea;
+  --muted: #a8a298;
+  --line: #2e2b27;
+  --line-strong: #78736a;
+  --primary: #f4f1ea;
+  --primary-hover: #e0dbd0;
+  --on-primary: #1d1a15;
+  --cue: #fbbf24;
+  --selection: #46423b;
+  --shadow-rgb: 0 0 0;
+  --shadow-alpha: 0.6;
+  --stage-edge: #2e2b27;
+}
+
+/* ------------------------------------------------------------------ base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: 88px;
+}
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: var(--size-body);
+  line-height: 1.55;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--selection);
+  color: var(--ink);
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+h1,
+h2,
+h3,
+p,
+figure,
+ul,
+ol,
+dl,
+dd {
+  margin: 0;
+}
+
+h1,
+h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--size-h1);
+}
+
+h2 {
+  font-size: var(--size-h2);
+}
+
+h3 {
+  font-size: var(--size-lead);
+  line-height: 1.25;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+p {
+  max-width: 62ch;
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.2em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+code,
+pre {
+  font-family: "Cascadia Mono", Consolas, ui-monospace, monospace;
+  font-size: 0.9rem;
+}
+
+.wrap {
+  width: min(100% - 2 * var(--gutter), var(--max));
+  margin-inline: auto;
+}
+
+.lead {
+  font-size: var(--size-lead);
+  line-height: 1.45;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.small {
+  font-size: var(--size-small);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip {
+  position: absolute;
+  left: var(--gutter);
+  top: -100px;
+  z-index: 20;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.skip:focus {
+  top: 12px;
+}
+
+/* --------------------------------------------------------------- buttons */
+.button,
+.button-quiet {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 26px;
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 650;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 160ms var(--ease),
+    background-color 160ms var(--ease),
+    color 160ms var(--ease);
+}
+
+.button {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.button:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.button-quiet {
+  background: var(--ground-raised);
+  color: var(--ink);
+}
+
+.button-quiet:hover {
+  background: var(--line);
+  transform: translateY(-1px);
+}
+
+.button:active,
+.button-quiet:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.arrow-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.arrow-link:hover {
+  text-decoration: underline;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 24px;
+}
+
+/* ---------------------------------------------------------------- shots */
+/* The app's own window, floating: the only things on the page with a shadow, because they really are windows. */
+.shot {
+  position: relative;
+}
+
+.shot img {
+  width: 100%;
+  border-radius: var(--radius);
+  box-shadow:
+    0 2px 6px rgb(var(--shadow-rgb) / calc(var(--shadow-alpha) * 0.5)),
+    0 28px 64px -20px rgb(var(--shadow-rgb) / var(--shadow-alpha));
+}
+
+.shot .for-booth {
+  display: none;
+}
+
+:root[data-theme="dark"] .shot .for-booth {
+  display: block;
+}
+
+:root[data-theme="dark"] .shot .for-daylight {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .shot .for-booth {
+    display: block;
+  }
+
+  :root:not([data-theme="light"]) .shot .for-daylight {
+    display: none;
+  }
+}
+
+.shot figcaption {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: var(--size-small);
+}
+
+/* -------------------------------------------------------------- motion */
+/* Sections rise into place once, part by part. Without JavaScript, or with reduced motion, everything just shows. */
+.js [data-reveal] > * {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 640ms var(--ease),
+    transform 640ms var(--ease);
+  transition-delay: calc(var(--i, 0) * 80ms);
+}
+
+.js [data-reveal].in > * {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .js [data-reveal] > * {
+    opacity: 1;
+    transform: none;
+  }
+}

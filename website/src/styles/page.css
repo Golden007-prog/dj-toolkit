@@ -1,0 +1,475 @@
+/* The landing page's layout, phone first: one column, and the 12-column grid from 901px up.
+   Tokens and shared pieces are in global.css. Page classes have page-only names (hero-, -section) so they never
+   collide with a component's own classes. */
+
+/* ------------------------------------------------------------------- bar */
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 32px;
+  min-height: 76px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.bar nav {
+  display: none;
+  gap: 28px;
+}
+
+.bar nav a {
+  color: var(--muted);
+  font-size: var(--size-small);
+  font-weight: 550;
+  text-decoration: none;
+}
+
+.bar nav a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+.bar-end {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bar-button {
+  min-height: 40px;
+  padding: 0 18px;
+  font-size: var(--size-small);
+}
+
+@media (min-width: 981px) {
+  .bar nav {
+    display: flex;
+  }
+}
+
+/* --------------------------------------------------------- shared grids */
+.hero,
+.split,
+.spotify-section,
+.looks,
+.status-section,
+.guides-section {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: clamp(16px, 3vw, 48px);
+  row-gap: 24px;
+  align-items: start;
+}
+
+/* ------------------------------------------------------------------ hero */
+.hero {
+  row-gap: 24px;
+  padding-top: clamp(28px, 5vw, 72px);
+}
+
+.hero-meta {
+  max-width: none;
+}
+
+.hero-stage {
+  position: relative;
+  z-index: 1;
+  margin-top: clamp(28px, 3.5vw, 48px);
+  margin-bottom: calc(-1 * clamp(64px, 15vw, 240px));
+}
+
+/* The count-in: four beats light up at 124 BPM, then the one turns amber and the app lands on it. */
+.hero-countin {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.hero-countin > span:not(.hero-countin-words) {
+  width: clamp(28px, 4vw, 56px);
+  height: 10px;
+  border-radius: 3px;
+  background: var(--line-strong);
+  animation: beat var(--beat) var(--ease) none;
+}
+
+.hero-countin > span:nth-child(1) {
+  animation-delay: 200ms;
+}
+.hero-countin > span:nth-child(2) {
+  animation-delay: calc(200ms + var(--beat));
+}
+.hero-countin > span:nth-child(3) {
+  animation-delay: calc(200ms + 2 * var(--beat));
+}
+.hero-countin > span:nth-child(4) {
+  animation-delay: calc(200ms + 3 * var(--beat));
+}
+
+.hero-countin > span.the-one {
+  background: var(--cue);
+  animation: one 900ms var(--ease) backwards;
+  animation-delay: calc(200ms + 4 * var(--beat));
+}
+
+.hero-countin-words {
+  margin-left: 10px;
+  max-width: none;
+}
+
+.hero-shot {
+  animation: land 900ms var(--ease) backwards;
+  animation-delay: calc(200ms + 4 * var(--beat));
+}
+
+@keyframes beat {
+  from {
+    background: var(--ink);
+    transform: scaleY(1.7);
+  }
+}
+
+@keyframes one {
+  from {
+    background: var(--line-strong);
+  }
+  25% {
+    background: var(--cue);
+    transform: scaleY(2);
+  }
+}
+
+@keyframes land {
+  from {
+    opacity: 0.55;
+    transform: translateY(32px);
+  }
+}
+
+/* ------------------------------------------------------------- sections */
+.section {
+  margin-top: var(--gap);
+}
+
+.band {
+  margin-top: var(--gap);
+  padding-block: var(--gap);
+  background: var(--ground-raised);
+}
+
+#lock {
+  margin-top: 0;
+  padding-top: calc(var(--gap) + clamp(64px, 15vw, 240px));
+}
+
+.band-surface {
+  background: var(--surface);
+}
+
+/* The one strong inverted moment: the stage, as dark as the app's waveform, in both looks. */
+.band-stage {
+  --ink: var(--stage-ink);
+  --muted: var(--stage-muted);
+  --ground-raised: var(--stage-raised);
+  --surface: var(--stage-hover);
+  background: var(--stage);
+  color: var(--stage-ink);
+}
+
+.band-stage :focus-visible {
+  outline-color: var(--stage-ink);
+}
+
+.split > .side {
+  margin-top: 16px;
+}
+
+/* Four beats: the app's own controls */
+.keys {
+  display: grid;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.keys div {
+  display: grid;
+  grid-template-columns: minmax(7rem, 9.5rem) 1fr;
+  gap: 16px;
+  align-items: baseline;
+}
+
+.keys dt {
+  font-weight: 650;
+}
+
+.keys dd {
+  color: var(--muted);
+}
+
+/* Then set the start */
+.facts-list {
+  display: grid;
+  gap: 18px;
+  margin-top: 8px;
+}
+
+.facts-list div {
+  display: grid;
+  gap: 2px;
+}
+
+.facts-list dt {
+  color: var(--muted);
+  font-size: var(--size-small);
+}
+
+.facts-list .file-name {
+  font-family: var(--font-numbers);
+  font-size: var(--size-lead);
+  font-weight: 600;
+}
+
+/* Spotify */
+.folders {
+  width: 100%;
+  margin-top: 8px;
+  border-collapse: collapse;
+  font-size: var(--size-lead);
+}
+
+.folders th {
+  padding: 0 0 10px;
+  color: var(--muted);
+  font-size: var(--size-small);
+  font-weight: 550;
+  text-align: left;
+}
+
+.folders td {
+  padding: 12px 12px 12px 0;
+  border-top: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.folders td:last-child {
+  font-weight: 650;
+}
+
+.spotify-shot {
+  margin-top: 16px;
+}
+
+.three {
+  display: grid;
+  gap: 20px clamp(24px, 3vw, 48px);
+  margin-top: clamp(24px, 4vw, 56px);
+}
+
+/* Tutorials */
+.guides {
+  display: grid;
+  gap: clamp(24px, 3vw, 40px);
+  margin-top: clamp(16px, 3vw, 48px);
+  padding: 0;
+  list-style: none;
+}
+
+.guides li {
+  display: grid;
+  gap: 4px clamp(16px, 3vw, 48px);
+  align-items: baseline;
+}
+
+.guides h3 {
+  color: var(--muted);
+  font-size: var(--size-body);
+}
+
+.guides li p {
+  max-width: none;
+  font-family: var(--font-display);
+  font-size: var(--size-lead);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* Booth or Daylight */
+.pair {
+  display: grid;
+  gap: clamp(16px, 3vw, 40px);
+  margin-top: clamp(16px, 3vw, 48px);
+}
+
+/* Open source */
+.link-list {
+  display: grid;
+  gap: 2px;
+  padding: 0;
+  list-style: none;
+}
+
+.code {
+  margin: 16px 0 0;
+  padding: clamp(18px, 2.4vw, 32px);
+  overflow-x: auto;
+  border-radius: var(--radius);
+  outline: 1px solid var(--stage-edge);
+  background: var(--stage);
+  color: var(--stage-ink);
+  font-size: clamp(0.8rem, 1.6vw, 0.9rem);
+  line-height: 1.75;
+}
+
+p code {
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: var(--surface);
+}
+
+/* ---------------------------------------------------------------- footer */
+.foot {
+  margin-top: var(--gap);
+  padding-bottom: 32px;
+}
+
+.wordmark {
+  max-width: none;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 15.2vw, 14.5rem);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 0.85;
+  white-space: nowrap;
+}
+
+.foot-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 24px;
+  margin-top: 28px;
+}
+
+.foot-row p {
+  max-width: none;
+}
+
+@media (max-width: 480px) {
+  .hero-countin-words {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------ the 12-column desktop */
+@media (min-width: 901px) {
+  .hero,
+  .split,
+  .spotify-section,
+  .looks,
+  .status-section,
+  .guides-section,
+  .guides li {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .hero h1,
+  .hero-meta {
+    grid-column: 1 / -1;
+  }
+
+  .hero-lead {
+    grid-column: 1 / span 6;
+  }
+
+  .hero-actions {
+    grid-column: 8 / -1;
+    align-self: end;
+    justify-content: flex-end;
+  }
+
+  .split > * {
+    grid-column: 1 / span 5;
+  }
+
+  .split > .side {
+    grid-column: 7 / -1;
+    grid-row: 1 / span 8;
+    margin-top: 0;
+  }
+
+  .split.flip > * {
+    grid-column: 8 / -1;
+  }
+
+  .split.flip > .side {
+    grid-column: 1 / span 6;
+  }
+
+  .spotify-section > * {
+    grid-column: 1 / span 5;
+  }
+
+  .spotify-section > .spotify-shot {
+    grid-column: 7 / -1;
+    grid-row: 1 / span 4;
+    margin-top: 0;
+  }
+
+  .spotify-section > .three {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .guides-section > * {
+    grid-column: 1 / span 7;
+  }
+
+  .guides-section > .guides {
+    grid-column: 1 / -1;
+  }
+
+  .guides h3 {
+    grid-column: 1 / span 4;
+  }
+
+  .guides li p {
+    grid-column: 5 / -1;
+  }
+
+  .looks > * {
+    grid-column: 1 / span 7;
+  }
+
+  .looks > .looks-switch {
+    grid-column: 9 / -1;
+    grid-row: 1 / span 2;
+    align-self: end;
+    justify-self: end;
+  }
+
+  .looks > .pair {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .status-section > * {
+    grid-column: 8 / -1;
+  }
+
+  .status-section > h2 {
+    grid-column: 1 / span 6;
+    grid-row: 1 / span 3;
+  }
+}

@@ -1,0 +1,40 @@
+# Tool settings only. Dependencies live in requirements.txt (the app) and requirements-dev.txt (tests, lint).
+# One command runs everything CI runs: `python tools/check.py` (see docs/testing.md).
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = [".claude", "website"]
+
+[tool.ruff.format]
+line-ending = "lf"
+
+[tool.ruff.lint]
+select = [
+  "E",   # pycodestyle errors
+  "W",   # pycodestyle warnings
+  "F",   # pyflakes: unused names, undefined names
+  "I",   # import order
+  "B",   # bugbear: likely bugs
+  "UP",  # modern Python syntax for 3.12
+  "N",   # pep8 naming
+  "SIM", # simpler code
+]
+ignore = [
+  "E501",   # long lines: the formatter wraps code; long UI strings stay readable on one line
+  "E741",   # `l` as a short loop name in layout code
+  "N815",   # Qt signals are camelCase by convention (openSetupGuide = Signal())
+  "N818",   # Cancelled / AuthCancelled read better than CancelledError
+  "SIM102", # nested ifs that mirror the UI states
+  "SIM105", # try/except/pass is clearer than contextlib.suppress for newcomers
+  "SIM108", # ternaries are not always clearer
+  "B905",   # zip(strict=...) everywhere is noise here
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["N802", "N803"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra"

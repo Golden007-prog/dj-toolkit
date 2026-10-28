@@ -1,0 +1,46 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+
+# Local secrets and data. The app keeps its own data in %APPDATA%\DJToolkit, outside the repo,
+# but never commit these if they turn up here.
+.env
+.env.*
+token.json
+search-cache.json
+discussions.json
+settings.json
+!.claude/settings.json
+
+# Output of tools/screenshots.py (the copies the website uses live in website/public/screens/)
+screenshots/
+
+# Website (Astro)
+website/node_modules/
+website/dist/
+website/.astro/
+
+# Editors and operating systems
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Claude Code: personal settings, and third-party skills.
+# Third-party skills are installed locally, not shipped (see docs/ux/SKILLS.md). Only the project's own are tracked.
+.claude/settings.local.json
+.claude/skills/*
+!.claude/skills/SOURCES.txt
+!.claude/skills/check/
+!.claude/skills/screenshots/
