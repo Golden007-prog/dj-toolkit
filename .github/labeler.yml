@@ -1,0 +1,12 @@
+website:
+  - 'website/**'
+
+acapella:
+  - 'djtoolkit/spotify/**'
+
+documentation:
+  - 'docs/**'
+  - '*.md'
+
+ci:
+  - '.github/**'
