@@ -9,7 +9,7 @@ Three rulesets (*Settings > Rules > Rulesets*):
 
 | Ruleset | What it does | Who can skip it |
 |---|---|---|
-| **Checks must pass** (`main`) | Nothing lands until these are green: `App on windows-latest (lint, format, tests)`, `App on macos-latest (lint, format, tests)`, `App on ubuntu-latest (lint, format, tests)`, `Website (build)`, `Dependency review`, `Workflow security (zizmor)` and `Dependency files`. No force pushes, and `main` can't be deleted | Nobody |
+| **Checks must pass** (`main`) | Nothing lands until these are green: `App on windows-latest (lint, format, tests)`, `App on macos-latest (lint, format, tests)`, `App on ubuntu-latest (lint, format, tests)`, `Website (build)`, `Dependency review`, `Workflow security (zizmor)`, `Workflow syntax (actionlint)` and `Dependency files`. No force pushes, and `main` can't be deleted | Nobody |
 | **A code owner approves** (`main`) | Changes arrive by pull request, with an approval from a code owner of each changed file ([`CODEOWNERS`](../.github/CODEOWNERS)). New commits dismiss old approvals; conversations must be resolved | The owner, whose own pull requests need only green checks (GitHub doesn't let anyone approve their own) |
 | **Release tags stay put** (`v*`) | A published version can't be moved or deleted | The owner |
 
