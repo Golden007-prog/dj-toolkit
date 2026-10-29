@@ -19,6 +19,22 @@ blocks nothing; the owner adds it to the first ruleset once it has stayed green.
 **Renaming a CI job?** The first ruleset waits for the old name and blocks every pull request. Update the ruleset in
 the same change.
 
+### Dependency files
+
+`requirements*.txt` and `website/package*.json` have no code owner, so Dependabot's own approval is enough to merge
+its minor and patch updates. [`dependency-guard.yml`](../.github/workflows/dependency-guard.yml) makes that safe: on
+every pull request it posts a status called **Dependency files**, which fails when anyone but Dependabot or the owner
+changed one of those files. A new dependency comes through an issue and the owner, never inside another change.
+
+The guard runs from `main` and never checks out the pull request, and it posts the status through the API on the pull
+request's last commit, because a check from `pull_request_target` isn't attached to that commit. That also means it
+can't be tried on its own pull request before it merges. To switch it on:
+
+1. Merge it, then look at the next pull request: its checks should list **Dependency files** as a status. A pull
+   request opened earlier gets one when it is pushed to, or from *Actions > Dependency guard > Run workflow*.
+2. Only then add **Dependency files** to the required checks of the *Checks must pass* ruleset. Adding it first would
+   block every pull request while it waits for a status that never comes.
+   
 **Not required yet:** [`zizmor.yml`](../.github/workflows/zizmor.yml) (*Workflow security (zizmor)*) reads the workflow
 files for mistakes CodeQL doesn't look for, such as an action not pinned to a commit or a token with more permission
 than a job needs. It shows what it finds as annotations on the pull request and never fails a run. Once its findings are

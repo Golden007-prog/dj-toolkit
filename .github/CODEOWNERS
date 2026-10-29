@@ -3,7 +3,8 @@
 *                         @tomgreef
 
 # No owner: Dependabot's minor and patch updates to these merge themselves once CI is green
-# (.github/workflows/dependabot-auto-merge.yml approves them). Any other change to them still needs an approval.
+# (.github/workflows/dependabot-auto-merge.yml approves them). A change by anyone else fails the "Dependency files"
+# status (.github/workflows/dependency-guard.yml), so it can't merge.
 /requirements.txt
 /requirements-dev.txt
 /requirements-build.txt

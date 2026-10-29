@@ -6,6 +6,25 @@ Format: what was asked → what we did → why → what is still open.
 
 ---
 
+## 2026-10-29: Dependency files keep Dependabot's auto-merge, with a guard
+
+**Owner request.** Close the gap that left `requirements*.txt` and `website/package*.json` without a code owner (#59),
+but keep Dependabot's minor and patch updates merging themselves.
+
+**What we did.** A workflow that runs from `main` posts a status, **Dependency files**, on every pull request. It
+fails when anyone but Dependabot or the owner changed one of those files. It becomes a required check in the ruleset
+only after it has run on a real pull request (`docs/maintaining.md`).
+
+**Why this and not an owner for those files.** An owner would also have to approve Dependabot's pull requests, which
+ends the auto-merge. A check written as part of a pull request can be edited by that pull request, so the guard uses
+`pull_request_target`, never checks out the pull request, and reports through the commit status API. The cost is that
+it can't be tested before it merges, and that it needs one ruleset change afterwards.
+
+**Still open.** Dependabot's own pull requests are trusted as they are: a hijacked release is caught by the seven-day
+cooldown and by CI, not by this guard.
+
+---
+
 ## 2026-10-29: Every outside and AI-written change waits for the owner
 
 **Owner request.** After a new account sent its first pull request: people, and the AI agents they use, might try to
