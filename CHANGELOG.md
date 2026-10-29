@@ -5,6 +5,12 @@ and versions follow [Semantic Versioning](https://semver.org/). Each release's s
 
 ## [Unreleased]
 
+### Added
+
+- You can now check a download. GitHub keeps a signed record of where each file was built, and the release has a
+  `SHA256SUMS.txt` to check it arrived whole. How:
+  [Check a download](https://github.com/tomgreef/dj-toolkit/blob/main/docs/releasing.md#check-a-download).
+
 ## [0.1.1] - 2026-10-29
 
 ### Changed

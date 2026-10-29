@@ -102,6 +102,8 @@ jobs:
     permissions:
       contents: write # create the release and its tag
       actions: write # start the website build: a release made by a workflow doesn't trigger other workflows
+      id-token: write # let GitHub sign that this run made the downloads (the attestation below)
+      attestations: write # keep that signed record with the repository
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -109,6 +111,14 @@ jobs:
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           merge-multiple: true
+      - name: Record where the downloads came from
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: |
+            DJ-Toolkit-Windows.zip
+            DJ-Toolkit-macOS.dmg
+      - name: Write the checksums
+        run: sha256sum DJ-Toolkit-Windows.zip DJ-Toolkit-macOS.dmg > SHA256SUMS.txt
       - name: Create the release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -116,7 +126,7 @@ jobs:
         run: |
           # This version's section of CHANGELOG.md, then GitHub adds the merged pull requests and new contributors.
           awk -v v="${TAG#v}" 'index($0, "## [" v "]") == 1 { on = 1; next } on && /^## / { exit } on' CHANGELOG.md > notes.md
-          gh release create "$TAG" DJ-Toolkit-Windows.zip DJ-Toolkit-macOS.dmg --repo "$GITHUB_REPOSITORY" \
+          gh release create "$TAG" DJ-Toolkit-Windows.zip DJ-Toolkit-macOS.dmg SHA256SUMS.txt --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" --title "DJ Toolkit $TAG" --notes-file notes.md --generate-notes
       - name: Rebuild the website with the new download links
         env:
