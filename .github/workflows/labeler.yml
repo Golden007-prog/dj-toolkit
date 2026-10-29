@@ -1,16 +1,22 @@
-name: "Pull Request Labeler"
+# Labels each pull request by the files it changes (.github/labeler.yml), so the review queue is easy to scan.
+# pull_request_target gives this job a token that can write to a pull request from a fork. That is safe only because it
+# never checks out or runs the pull request's code: the action reads the list of changed files through the API, and the
+# configuration from main. Don't add a checkout of the pull request here (docs/maintaining.md).
+name: Pull Request Labeler
+
 on:
-  pull_request_target:
+  pull_request_target: # zizmor: ignore[dangerous-triggers] safe: it never checks out the pull request (see above)
     types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
 
 jobs:
   label:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
-      contents: read
-      pull-requests: write
+      contents: read # reads the configuration
+      pull-requests: write # adds the labels
     steps:
-      - uses: actions/labeler@v5
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          configuration-path: .github/labeler.yml
+      - uses: actions/labeler@bf12e9b00b37c5c0ca2b87b79b2daf7891dbda13 # v7.0.0

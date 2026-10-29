@@ -1,12 +1,16 @@
+# Which label a pull request gets, from the files it changes (workflow: labeler.yml). Each label must already exist.
 website:
-  - 'website/**'
+  - changed-files:
+      - any-glob-to-any-file: "website/**"
 
-acapella:
-  - 'djtoolkit/spotify/**'
+spotify:
+  - changed-files:
+      - any-glob-to-any-file: "djtoolkit/spotify/**"
 
 documentation:
-  - 'docs/**'
-  - '*.md'
+  - changed-files:
+      - any-glob-to-any-file: ["docs/**", "*.md"]
 
 ci:
-  - '.github/**'
+  - changed-files:
+      - any-glob-to-any-file: ".github/**"
