@@ -22,7 +22,6 @@ and versions follow [Semantic Versioning](https://semver.org/). Each release's s
   can't find them, so update to this version.
 - On macOS, Open the unmatched report (Spotify sync, More) now opens the report. It only worked on Windows.
 
-
 ## [0.1.0] - 2026-10-28
 
 ### Added
