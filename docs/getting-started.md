@@ -1,6 +1,6 @@
 # Getting started
 
-From nothing to a change you can see, in about ten minutes, on Windows 10 or 11.
+From nothing to a change you can see, in about ten minutes, on Windows or macOS. Just want to use the app? Download it instead: see the README.
 
 ## 1. Install
 
@@ -14,6 +14,9 @@ py -3.12 -m venv .venv
 .venv\Scripts\pip install -r requirements-dev.txt
 .venv\Scripts\pre-commit install
 ```
+
+On macOS the same steps are `python3.12 -m venv .venv`, `.venv/bin/pip install -r requirements-dev.txt` and
+`.venv/bin/pre-commit install`; start the app with `./run.command` and check with `.venv/bin/python tools/check.py`.
 
 `pre-commit install` makes git run ruff and a few file checks on every commit. It's optional; CI runs them anyway.
 

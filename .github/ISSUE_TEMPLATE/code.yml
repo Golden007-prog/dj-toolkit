@@ -1,0 +1,25 @@
+name: Code, tests or docs
+description: A change people using the app won't notice. Tidier code, a missing test, tooling, or the docs.
+labels: ["needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For developers. Something new for DJs is an *Idea* instead, so people can vote on it.
+  - type: textarea
+    id: what
+    attributes:
+      label: What should change, and why
+    validations:
+      required: true
+  - type: textarea
+    id: how
+    attributes:
+      label: How you'd do it
+      description: The files, an approach, or what you're unsure about.
+  - type: checkboxes
+    id: taking
+    attributes:
+      label: Doing it yourself?
+      options:
+        - label: I'd like to make this change

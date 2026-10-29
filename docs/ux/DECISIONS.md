@@ -6,6 +6,82 @@ Format: what was asked → what we did → why → what is still open.
 
 ---
 
+## 2026-10-28: Who approves what, roles, Dependabot and security
+
+**Owner request.** "I need to approve all PRs, otherwise this might go crazy", while letting developers grow from
+contributor to maintainer. A clear path from issue to pull request, with templates. Dependabot with auto-merge for
+minor and patch updates; major updates handed to Copilot at the end of the month to follow the migration guide, with
+auto-merge once the checks pass. GitHub's security features, set up the way best practice says. And for agents: in
+chat, only questions and results, no running commentary.
+
+**Done.**
+- **Approval:** `.github/CODEOWNERS` makes the owner the code owner of everything, and the ruleset *A code owner
+  approves* requires their approval. The owner is exempt from that ruleset, because GitHub never lets anyone approve
+  their own pull request. The ruleset *Checks must pass* has no exemptions: nothing lands with red CI, whoever wrote
+  it. *Release tags stay put* stops a published version from being moved. Squash merging only.
+- **Roles** (`GOVERNANCE.md`): contributor, collaborator (write access, invited after about three merged pull
+  requests), maintainer (listed in `CODEOWNERS` for an area, so their approval counts), owner. A personal-account
+  repository has only owner and collaborator levels; moving to a free organization adds Triage and Maintain roles.
+- **Workflow** (`CONTRIBUTING.md`, `docs/maintaining.md`): every issue form adds `needs triage`, and a new form
+  covers code, tests and docs. A maintainer triages weekly to `help wanted` or `good first issue`; you claim an issue
+  by commenting; a pull request says `Fixes #N`.
+- **Dependabot:** weekly, with a cooldown (new releases wait 3 to 14 days, against hijacked packages). Minor and patch
+  updates come grouped and merge themselves: a workflow approves them. That approval counts only because the
+  dependency files have no code owner. Majors get the label `major update`. On the last day of the month
+  `major-updates.yml` opens an issue for each and assigns Copilot. When Copilot's pull request is ready, auto-merge
+  turns on with the owner's token, so it follows the owner's rules and merges when green. GitHub only lets a person
+  assign Copilot, so this needs a `COPILOT_TOKEN` secret; until the owner adds one, the issues wait for a person.
+  Copilot's pull requests also need **Approve and run workflows**, GitHub's default. We kept it as the owner's look.
+- **Releases** now publish themselves when a pull request that bumps `__version__` merges. Before, you pushed a tag
+  by hand. The notes come from the version's CHANGELOG section.
+- **Security:** private vulnerability reporting, Dependabot alerts, secret scanning with push protection, CodeQL
+  (Python, the website, the workflows), dependency review on every pull request (blocks moderate or worse), and
+  read-only workflow tokens by default.
+- `tests/test_repo_rules.py` checks the parts that live in files: only the dependency files lack an owner, majors
+  never merge themselves, and every issue form waits for triage.
+
+**Found on the way.** The first macOS CI run caught a real bug. Exporting to a USB stick that isn't plugged in didn't
+fall back on a Mac, because the drive check only knew Windows drive letters. `drive_of` now knows `/Volumes/<name>`.
+
+**Open:** the owner creates `COPILOT_TOKEN` (`docs/maintaining.md` has the steps); a free organization once there are
+more than two maintainers.
+
+## 2026-10-28: Market research, issues, voting, and Windows and macOS downloads
+
+**Owner request.** After publishing: research the market and create issues for features to build next; a voting system
+so people can request features and report bugs from the desktop app, the website or GitHub; the app available on
+Windows and macOS, with easy install steps.
+
+**Market research (web, October 2026).** Library managers (Lexicon, about $17 a month) move cues and grids between DJ
+apps. rekordbox 7, Serato, Traktor and VirtualDJ all have live stems, but blind tests rate their vocals unevenly and
+prep guides recommend separating key tracks offline. Open-source tools (Trackmatch, InPhase, rdbs) match Spotify
+playlists with local libraries; none links you to buy what's missing. USB exports keep failing DJs (a rekordbox
+release was pulled in March 2026; a CDJ-3000 firmware lost playlists in October 2025). Mixed In Key ($58) leads key
+detection; KeyFinder is the free option. Nothing found does count-in and grid prep for acapellas: that's our niche.
+This became issues #1 to #11 (label `idea`), plus four good first issues (#12 to #15), two calls for real-world
+testing (#16, #17) and the two pieces built here (#18, #19).
+
+**Voting, done.** One list for everyone: GitHub issues labelled `idea`, a thumbs-up reaction is a vote. The app's new
+**Requests** page (`ui/requests_tab.py`, data in `feedback.py`, no Qt there) shows the most-voted ideas, fetched only
+when the page is opened, and opens GitHub's pre-filled forms in the browser to vote, suggest or report (the bug form
+gets the app version and system). The website lists the same ideas, read when it's built and rebuilt daily.
+**Why GitHub:** no backend to run or moderate, free, open, and the same list developers work from. **The cost:** voting
+needs a free GitHub account, which many DJs don't have; that's said plainly wherever people vote. **Open:** a
+no-account vote (a small backend, or votes counted from the app) if DJs ask for it.
+
+**Windows and macOS, done.** The app folder follows the system (`settings.app_dir`: `%APPDATA%` on Windows,
+`~/Library/Application Support` on macOS, `DJTOOLKIT_HOME` overrides for tests). Mac fonts (Helvetica Neue, DIN
+Alternate) and native shortcut hints. PyInstaller builds both (`packaging/dj-toolkit.spec`); `main.py --self-test` proves
+a build works (assets, tempo analysis with numba, MP3 export with ffmpeg, Qt) and runs in the release workflow on both
+systems. The Windows build was built and self-tested locally (about 485 MB unpacked: numba's compiler and ffmpeg are
+most of it); the macOS build is only checked in CI. **Not done:** code signing (first opens warn; the install steps
+say how to continue), Intel Macs, a Windows setup program.
+
+**Lesson.** The Claude Code format-on-edit hook ran `ruff --fix` between two edits and deleted an import that wasn't
+used yet. It now only sorts imports and formats; unused imports are left to the stop gate and CI. Separately, the UI
+tests had always crashed on exit about half the time (code 127) with every test passing: windows and their media
+players were torn down after Qt. `tests/conftest.py` now deletes them at the end of the session.
+
 ## 2026-10-28: Open-source release, built for AI-assisted contributors, and a landing page
 
 **Owner request.** Prepare the repo for open source with the usual practices (contributing, docs, tests), and make it
@@ -181,5 +257,5 @@ Resolved on 2026-10-28 (see the entry at the top): the skills are not shipped, a
 Still open:
 
 - Ship real (not mock) Spotify setup screenshots, or keep the mocks labelled as illustrations.
-- Packaging to a Windows `.exe` (PyInstaller) is not done. `djtoolkit/paths.py` already handles a frozen bundle.
+- Packaging: done on 2026-10-28 (downloads for Windows and macOS, see that entry).
 - Persona and tutorials: label clearly as hypotheses; invite DJs to challenge them (the forum is the intended place).

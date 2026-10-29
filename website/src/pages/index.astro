@@ -6,22 +6,25 @@ import LookSwitch from "../components/LookSwitch.astro";
 import Shot from "../components/Shot.astro";
 import TapTempo from "../components/TapTempo.astro";
 import Base from "../layouts/Base.astro";
-import { asset, links } from "../site";
+import { asset, downloads, links, topIdeas } from "../site";
 import "../styles/page.css";
 
 const folders = ["House", "Disco", "Techno", "Acapellas"];
+const ideas = await topIdeas(); // from GitHub, when the site is built
+const release = await downloads(); // null until a release has both builds
+const systems = release ? "Windows and macOS" : "Windows";
 ---
 
 <Base
   title="DJ Toolkit: land every acapella on the one"
-  description="A free, open-source Windows app for DJ prep. Lock the grid on four beats, add a count-in, and the vocal comes in on the downbeat. Your music folders become Spotify playlists, too."
+  description="A free, open-source app for DJ prep, on Windows and macOS. Lock the grid on four beats, add a count-in, and the vocal comes in on the downbeat. Your music folders become Spotify playlists, too."
 >
   <header class="bar wrap">
     <a class="brand" href={asset("")}><BrandMark /><span>DJ Toolkit</span></a>
     <nav aria-label="Sections">
       <a href="#lock">How it works</a>
-      <a href="#spotify">Spotify sync</a>
-      <a href="#tutorials">Tutorials</a>
+      <a href="#install">Install</a>
+      <a href="#requests">Requests</a>
       <a href="#build">Contribute</a>
     </nav>
     <div class="bar-end">
@@ -34,15 +37,16 @@ const folders = ["House", "Disco", "Techno", "Acapellas"];
     <section class="hero wrap" aria-labelledby="hero-title">
       <h1 id="hero-title">Land every acapella on the one.</h1>
       <p class="lead hero-lead">
-        DJ Toolkit is a free Windows app for DJ prep. Mark four beats at the chorus, add a count-in, and the vocal comes
-        in on the downbeat, first time.
+        DJ Toolkit is a free app for DJ prep, on {systems}. Mark four beats at the chorus, add a count-in, and the vocal
+        comes in on the downbeat, first time.
       </p>
       <div class="actions hero-actions">
-        <a class="button" href={links.run}>Get it on GitHub</a>
+        <a class="button" href={release ? "#install" : links.repo}>{release ? "Download, free" : "Get it on GitHub"}</a>
         <a class="arrow-link" href="#lock">Try the four-beat lock <Arrow down /></a>
       </div>
       <p class="hero-meta small muted">
-        Free and open source · Windows 10 and 11 · Also turns your music folders into Spotify playlists
+        Free and open source · {release ? "Windows 10 and 11, macOS 12 or later" : "Windows 10 and 11"} · Also turns your music
+        folders into Spotify playlists
       </p>
     </section>
 
@@ -183,6 +187,51 @@ const folders = ["House", "Disco", "Techno", "Acapellas"];
       </div>
     </section>
 
+    <section id="install" class="wrap section install-section" data-reveal aria-labelledby="install-title">
+      <h2 id="install-title">Install it in a minute.</h2>
+      {
+        release ? (
+          <p class="lead">Download it, open it, prep. Version {release.version}, free, with nothing else to install.</p>
+        ) : (
+          <p class="lead">
+            The first downloads for Windows and macOS are on their way. Until then, it runs from source in about five
+            minutes.
+          </p>
+        )
+      }
+      {
+        release && (
+          <div class="platforms">
+            <div class="platform">
+              <h3>Windows 10 and 11</h3>
+              <a class="button" href={release.windows}>Download for Windows</a>
+              <ol>
+                <li>Unzip <strong>DJ-Toolkit-Windows.zip</strong>.</li>
+                <li>Open the DJ Toolkit folder and double-click <strong>DJ Toolkit</strong>.</li>
+                <li>If Windows says it protected your PC, choose <strong>More info</strong>, then <strong>Run anyway</strong>.</li>
+              </ol>
+            </div>
+            <div class="platform">
+              <h3>macOS 12 or later, Apple silicon</h3>
+              <a class="button" href={release.mac}>Download for macOS</a>
+              <ol>
+                <li>Open <strong>DJ-Toolkit-macOS.dmg</strong> and drag DJ Toolkit into Applications.</li>
+                <li>Open DJ Toolkit from Applications.</li>
+                <li>
+                  If macOS says it can't check the app, open <strong>System Settings</strong>, then{" "}
+                  <strong>Privacy &amp; Security</strong>, and choose <strong>Open Anyway</strong>.
+                </li>
+              </ol>
+            </div>
+          </div>
+        )
+      }
+      <p class="small muted">
+        {release && "Why the warning? The app isn't signed with a paid certificate yet, and all of its code is on GitHub. "}
+        <a href={links.source}>Run it from source</a> instead, if you'd rather.
+      </p>
+    </section>
+
     <section id="build" class="band" aria-labelledby="build-title">
       <div class="wrap split" data-reveal>
         <h2 id="build-title">Open source, and easy to work on.</h2>
@@ -216,6 +265,37 @@ check.bat</code></pre>
       <div class="actions">
         <a class="button" href={links.feedback}>Share DJ feedback</a>
         <a class="arrow-link" href={links.guide}>Read the user guide <Arrow /></a>
+      </div>
+    </section>
+
+    <section id="requests" class="band" aria-labelledby="requests-title">
+      <div class="wrap requests-section" data-reveal>
+        <h2 id="requests-title">Vote on what comes next.</h2>
+        <p class="lead">
+          Every idea is a GitHub issue, and a thumbs-up is a vote. Back the ones you want, suggest your own, or report a
+          bug. The app's Requests page shows the same list.
+        </p>
+        {
+          ideas && ideas.length > 0 ? (
+            <ol class="ideas">
+              {ideas.map((i) => (
+                <li>
+                  <span class="votes">{i.votes}</span>
+                  <span class="visually-hidden">{i.votes === 1 ? "vote" : "votes"}:</span>
+                  <a href={i.url}>{i.title}</a>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p>The list lives on GitHub.</p>
+          )
+        }
+        <div class="actions">
+          <a class="button" href={links.suggest}>Suggest a feature</a>
+          <a class="button-quiet" href={links.bug}>Report a bug</a>
+          <a class="arrow-link" href={links.ideas}>See every idea <Arrow /></a>
+        </div>
+        <p class="small muted">Voting needs a free GitHub account. This list is refreshed once a day.</p>
       </div>
     </section>
   </main>

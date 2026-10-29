@@ -70,3 +70,21 @@ def test_playlist_name_accepts_folder_and_legacy_genre_tokens():
     assert s.playlist_name("House") == "Local: House"
     s.playlist_template = "Local: {genre}"  # templates saved by older versions
     assert s.playlist_name("House") == "Local: House"
+
+
+def test_the_app_folder_follows_the_system(monkeypatch, tmp_path):
+    import sys
+    from pathlib import Path
+
+    from djtoolkit import settings
+
+    monkeypatch.setenv("DJTOOLKIT_HOME", str(tmp_path / "portable"))
+    assert settings.app_dir() == tmp_path / "portable"  # the override wins everywhere (tests rely on it)
+
+    monkeypatch.delenv("DJTOOLKIT_HOME")
+    monkeypatch.setattr(Path, "home", lambda: tmp_path)
+    monkeypatch.setenv("APPDATA", str(tmp_path / "Roaming"))
+    monkeypatch.setattr(sys, "platform", "win32")
+    assert settings.app_dir() == tmp_path / "Roaming" / "DJToolkit"
+    monkeypatch.setattr(sys, "platform", "darwin")
+    assert settings.app_dir() == tmp_path / "Library" / "Application Support" / "DJToolkit"

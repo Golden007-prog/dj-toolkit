@@ -1,7 +1,13 @@
 name: Idea
 description: Suggest something new, or a better way to do something.
-labels: ["idea"]
+labels: ["idea", "needs triage"]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        One idea per issue, please. People vote with a thumbs-up reaction on the issue, and the most-voted ideas are
+        listed in the app's Requests page and on the website. Check the list first: if your idea is there, vote for it
+        and add how you'd use it.
   - type: textarea
     id: problem
     attributes:

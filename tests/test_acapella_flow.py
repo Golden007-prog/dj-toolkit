@@ -1,6 +1,7 @@
 """The two-step acapella workflow, end to end, without a sound card."""
 
-from pathlib import Path
+import sys
+from pathlib import Path, PurePosixPath, PureWindowsPath
 
 import numpy as np
 import pytest
@@ -8,7 +9,7 @@ import soundfile as sf
 
 from djtoolkit.audio import core
 from djtoolkit.settings import Settings
-from djtoolkit.ui.acapella_tab import AcapellaTab
+from djtoolkit.ui.acapella_tab import AcapellaTab, drive_of
 
 SR = 44100
 BPM = 128.0
@@ -258,9 +259,26 @@ def test_export_folder_falls_back_when_the_drive_is_not_plugged_in(tab):
     assert tab._export_folder()[0] == tab.test_path.parent / "DJ-ready"
     tab.out_dir.setText(str(tab.test_path.parent / "exports"))  # a folder that doesn't exist yet: fine, it is created
     assert tab._export_folder() == (tab.test_path.parent / "exports", "")
-    tab.out_dir.setText(r"Q:\gigs\usb")  # no such drive here
+    # a USB stick that isn't plugged in, named the way this system names drives
+    stick, name = (
+        (r"Q:\gigs\usb", "Q:\\") if sys.platform == "win32" else ("/Volumes/NO-SUCH-STICK/gigs", "NO-SUCH-STICK")
+    )
+    tab.out_dir.setText(stick)
     folder, note = tab._export_folder()
-    assert folder == tab.test_path.parent / "DJ-ready" and "isn't connected" in note
+    assert folder == tab.test_path.parent / "DJ-ready" and f"{name} isn't connected" in note
+
+
+@pytest.mark.parametrize(
+    ("folder", "drive"),
+    [
+        (PureWindowsPath(r"Q:\gigs\usb"), PureWindowsPath("Q:\\")),
+        (PureWindowsPath(r"\\studio\share\gigs"), PureWindowsPath("\\\\studio\\share\\")),  # a network share
+        (PurePosixPath("/Volumes/GIGS/DJ-ready"), PurePosixPath("/Volumes/GIGS")),  # a USB stick on a Mac
+        (PurePosixPath("/tmp/gigs/DJ-ready"), None),  # a folder on the Mac's own disk, always there
+    ],
+)
+def test_the_drive_of_a_folder_is_found_on_windows_and_on_a_mac(folder, drive):
+    assert drive_of(folder) == drive
 
 
 def test_changing_controls_is_remembered_immediately(tab):

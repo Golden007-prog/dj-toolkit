@@ -1,26 +1,50 @@
-# Monthly, grouped update pull requests. CI tests each one before anyone merges it.
+# Dependency updates, every Monday. What happens to each kind is in docs/maintaining.md:
+# - minor and patch updates come as one pull request per ecosystem and merge themselves once CI is green
+#   (.github/workflows/dependabot-auto-merge.yml);
+# - major updates come one per pull request, labelled "major update", and wait for the monthly upgrade
+#   (.github/workflows/major-updates.yml hands them to Copilot).
+# A new release waits a few days (cooldown) before it's proposed, so a broken or hijacked version can be caught first.
+# Security updates don't wait.
 version: 2
 updates:
   - package-ecosystem: pip
     directory: /
     schedule:
-      interval: monthly
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+      semver-major-days: 14
+      semver-minor-days: 7
+      semver-patch-days: 3
     groups:
       python:
         patterns: ["*"]
+        update-types: [minor, patch]
 
   - package-ecosystem: npm
     directory: /website
     schedule:
-      interval: monthly
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+      semver-major-days: 14
+      semver-minor-days: 7
+      semver-patch-days: 3
     groups:
       website:
         patterns: ["*"]
+        update-types: [minor, patch]
 
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: monthly
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
     groups:
       actions:
         patterns: ["*"]
+        update-types: [minor, patch]

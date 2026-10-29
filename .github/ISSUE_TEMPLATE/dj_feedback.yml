@@ -1,6 +1,6 @@
 name: DJ feedback
 description: You tried it on real music, or you'd do a tutorial differently. No coding needed.
-labels: ["dj feedback"]
+labels: ["dj feedback", "needs triage"]
 body:
   - type: markdown
     attributes:

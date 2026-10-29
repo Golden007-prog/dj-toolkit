@@ -5,6 +5,10 @@ on:
   push:
     branches: [main]
     paths: ["website/**", "assets/tutorials/**", ".github/workflows/pages.yml"]
+  release:
+    types: [published] # a release published by hand; the release workflow starts this build itself
+  schedule:
+    - cron: "17 5 * * *" # once a day, so the vote counts on the page stay fresh
   workflow_dispatch:
 
 permissions:
@@ -41,6 +45,7 @@ jobs:
         env:
           SITE: ${{ steps.pages.outputs.origin }}
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          GITHUB_TOKEN: ${{ github.token }} # reads public ideas and releases without hitting the anonymous rate limit
       - uses: actions/upload-pages-artifact@v5
         with:
           path: website/dist

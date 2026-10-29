@@ -1,0 +1,115 @@
+# Major dependency updates, once a month (docs/maintaining.md):
+# 1. On the last day of the month, each open Dependabot pull request labelled "major update" gets an issue, assigned
+#    to Copilot, which follows the migration guide and opens a pull request.
+# 2. When Copilot's pull request is ready for review, auto-merge turns on, so it merges once CI is green.
+# Both use COPILOT_TOKEN, the owner's fine-grained token: GitHub lets only a person assign Copilot. Without it, the
+# issues still open, labelled "help wanted", for a person to pick up.
+name: Major updates
+
+on:
+  schedule:
+    - cron: "0 6 28-31 * *" # the first step stops unless it's the last day of the month
+  workflow_dispatch: # hand them over now
+  pull_request_target: # runs this file from main, never Copilot's code, so the token stays safe
+    types: [opened, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  hand-over:
+    name: Hand major updates to Copilot
+    if: github.event_name != 'pull_request_target' && github.repository == 'tomgreef/on-the-one'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      issues: write
+      pull-requests: read
+    env:
+      GH_TOKEN: ${{ secrets.COPILOT_TOKEN || github.token }}
+      HAS_COPILOT: ${{ secrets.COPILOT_TOKEN != '' }}
+      REPO: ${{ github.repository }}
+    steps:
+      - name: Only on the last day of the month
+        id: when
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = schedule ] && [ "$(date -u -d tomorrow +%d)" != 01 ]; then
+            echo "go=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "go=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open an issue for each major update and assign Copilot
+        if: steps.when.outputs.go == 'true'
+        run: |
+          set -euo pipefail
+          prs=$(gh pr list --repo "$REPO" --author app/dependabot --label "major update" --state open --json number,title,url)
+          if [ "$(jq length <<< "$prs")" = 0 ]; then
+            echo "No major updates are waiting." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          waiting=$(gh issue list --repo "$REPO" --label "major update" --state open --limit 200 --json title --jq '.[].title')
+          jq -c '.[]' <<< "$prs" | while read -r pr; do
+            n=$(jq -r .number <<< "$pr")
+            title=$(jq -r .title <<< "$pr")
+            url=$(jq -r .url <<< "$pr")
+            if grep -qF "(#$n)" <<< "$waiting"; then
+              echo "- #$n already has an issue." >> "$GITHUB_STEP_SUMMARY"
+              continue
+            fi
+            body=$(cat <<EOF
+          Dependabot opened #$n: **$title**. A new major version can need more than a new version number.
+
+          - [ ] Read its release notes and migration guide (linked in #$n).
+          - [ ] Update it, and change only what the upgrade needs.
+          - [ ] \`python tools/check.py\` passes. CI runs it on Windows and macOS.
+          - [ ] A change people would notice gets a line in \`CHANGELOG.md\` under *Unreleased*.
+
+          Say "Supersedes #$n" in the pull request. Dependabot closes #$n once the new version is on \`main\`.
+          EOF
+            )
+            issue=$(gh issue create --repo "$REPO" --title "Major update: $title (#$n)" --label "major update" --body "$body")
+            if [ "$HAS_COPILOT" = true ]; then
+              jq -n --arg repo "$REPO" --arg pr "$url" '{
+                assignees: ["copilot-swe-agent[bot]"],
+                agent_assignment: {
+                  target_repo: $repo,
+                  base_branch: "main",
+                  custom_instructions: ("Upgrade the dependency from " + $pr + " to its new major version. Follow its migration guide, change only what the upgrade needs, follow AGENTS.md, and run python tools/check.py until it passes.")
+                }
+              }' | gh api --method POST "repos/$REPO/issues/${issue##*/}/assignees" --input - > /dev/null
+              echo "- $issue: assigned to Copilot." >> "$GITHUB_STEP_SUMMARY"
+            else
+              gh issue edit "$issue" --repo "$REPO" --add-label "help wanted"
+              echo "- $issue: no COPILOT_TOKEN, so it waits for a person (docs/maintaining.md)." >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+
+  auto-merge:
+    name: Merge Copilot's upgrade once CI is green
+    if: >-
+      github.event_name == 'pull_request_target' && !github.event.pull_request.draft &&
+      github.event.pull_request.user.login == 'Copilot'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {} # it works with the owner's token, so auto-merge follows the owner's rules
+    steps:
+      - name: Turn on auto-merge if it closes a major update issue
+        env:
+          GH_TOKEN: ${{ secrets.COPILOT_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          if [ -z "$GH_TOKEN" ]; then
+            echo "No COPILOT_TOKEN, so it waits for a person to merge it." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          for issue in $(gh pr view "$PR" --repo "$REPO" --json closingIssuesReferences --jq '.closingIssuesReferences[].number'); do
+            if gh issue view "$issue" --repo "$REPO" --json labels --jq '.labels[].name' | grep -qx "major update"; then
+              gh pr merge "$PR" --repo "$REPO" --auto --squash
+              echo "Auto-merge is on: it merges once CI is green." >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+          done
+          echo "It doesn't close a major update issue, so it's left alone." >> "$GITHUB_STEP_SUMMARY"

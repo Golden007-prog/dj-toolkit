@@ -15,6 +15,7 @@ shadcn/ui websites): soft, floating, friendly.
 
 from __future__ import annotations
 
+import sys
 from collections.abc import Callable
 from dataclasses import dataclass
 
@@ -130,9 +131,14 @@ LIGHT = palette("light")
 P: Palette = DARK  # the active palette
 _listeners: list[Callable[[], None]] = []
 
-UI_FONTS = ["Segoe UI Variable Text", "Segoe UI", "Helvetica Neue", "Arial"]
-HEADING_FONT = "Segoe UI Variable Display"  # friendly, modern; ships with Windows 11
-NUMBER_FONT = "Bahnschrift"  # DIN-style, kept only for numbers (BPM, clock, table figures): mixer-display feel
+if sys.platform == "darwin":  # the same feel, with fonts every Mac has
+    UI_FONTS = ["Helvetica Neue", "Arial"]
+    HEADING_FONT = "Helvetica Neue"
+    NUMBER_FONT = "DIN Alternate"
+else:
+    UI_FONTS = ["Segoe UI Variable Text", "Segoe UI", "Helvetica Neue", "Arial"]
+    HEADING_FONT = "Segoe UI Variable Display"  # friendly, modern; ships with Windows 11
+    NUMBER_FONT = "Bahnschrift"  # DIN-style, kept only for numbers (BPM, clock, table figures): mixer-display feel
 DISPLAY_FONT = NUMBER_FONT  # legacy name
 
 
@@ -248,6 +254,7 @@ QPushButton#ghost:hover, QToolButton#ghost:hover {{ background: {c.hover}; }}
 QPushButton#ghost:focus, QToolButton#ghost:focus {{ border: 2px solid {c.link}; }}
 QPushButton#ghost:checked {{ background: {c.select}; border: 1px solid {c.border_strong}; }}
 QLabel#clock {{ font-family: "{NUMBER_FONT}"; font-size: 16px; font-weight: 600; padding: 0 8px; }}
+QLabel#votes {{ font-family: "{NUMBER_FONT}"; font-size: 22px; font-weight: 600; }}
 QLabel#stepTitle {{ font-family: "{HEADING_FONT}"; font-size: 15px; font-weight: 600; }}
 QPushButton#zoom {{ padding: 4px 10px; min-width: 18px; }}
 QPushButton#nudge {{ padding: 7px 0; min-width: 44px; max-width: 44px; }}

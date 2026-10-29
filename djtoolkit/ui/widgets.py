@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from PySide6.QtCore import QRectF, QSize, Qt, Signal
-from PySide6.QtGui import QColor, QFontMetrics, QPainter, QPen
+from PySide6.QtGui import QColor, QFontMetrics, QKeySequence, QPainter, QPen
 from PySide6.QtWidgets import (
     QButtonGroup,
     QFrame,
@@ -15,6 +15,11 @@ from PySide6.QtWidgets import (
 )
 
 from . import icons, theme
+
+
+def keys(sequence: str) -> str:
+    """A shortcut the way this system writes it: Ctrl+P on Windows, Cmd (the command key) and P on macOS."""
+    return QKeySequence(sequence).toString(QKeySequence.SequenceFormat.NativeText)
 
 
 def bind_icon(button, name: str, size: int = 18, color_attr: str | None = None) -> None:

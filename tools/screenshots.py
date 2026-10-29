@@ -22,7 +22,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-os.environ["APPDATA"] = tempfile.mkdtemp(prefix="djtoolkit-screens-")  # before djtoolkit reads any settings
+os.environ["DJTOOLKIT_HOME"] = tempfile.mkdtemp(prefix="djtoolkit-screens-")  # before djtoolkit reads any settings
 
 import numpy as np  # noqa: E402
 import soundfile as sf  # noqa: E402
@@ -31,6 +31,7 @@ from PySide6.QtGui import QColor, QImage  # noqa: E402
 from PySide6.QtWidgets import QApplication  # noqa: E402
 
 from djtoolkit.audio import core  # noqa: E402
+from djtoolkit.feedback import Idea  # noqa: E402
 from djtoolkit.ui import theme  # noqa: E402
 from djtoolkit.ui.main_window import MainWindow  # noqa: E402
 
@@ -144,23 +145,35 @@ def main() -> int:
         if n == 2:
             tab.set_start(FIRST_VOCAL)
 
-    shots = [  # (file name, page index, what to set up first)
-        ("acapella", 0, lambda: step(1)),
-        ("acapella-start", 0, lambda: step(2)),
-        ("sync", 1, lambda: None),
-        ("tutorials", 2, lambda: None),
+    # The Requests page, offline: a sample list with made-up vote counts. For looking only; never published (no --site).
+    sample = [Idea(n, t, v, "") for n, t, v in (
+        (1, "Detect the key of an acapella, and warn about a key clash", 12),
+        (7, "A gig-ready check for your USB", 9),
+        (2, "Make an acapella from a full track (offline vocal separation)", 7),
+        (4, "Carry the grid and cue points into rekordbox", 4),
+        (6, "Show the tracks in your Spotify playlists that aren't on your drive", 1),
+    )]  # fmt: skip
+    win.requests._loaded = True  # don't reach out to GitHub
+    win.requests.show_ideas(sample)
+
+    shots = [  # (file name, page index, what to set up first, also for the website)
+        ("acapella", 0, lambda: step(1), True),
+        ("acapella-start", 0, lambda: step(2), True),
+        ("sync", 1, lambda: None, True),
+        ("tutorials", 2, lambda: None, True),
+        ("requests", 3, lambda: None, False),
     ]
     out = Path(args.out)
     site = ROOT / "website" / "public"
     print(f"Writing screenshots ({args.accent}):")
     for mode, label in MODES.items():
         win.set_theme(mode)
-        for name, page, prepare in shots:
+        for name, page, prepare, for_site in shots:
             win.go(page, save=False)
             prepare()
             settle(app)
             save(render(win, 1), out / f"{name}-{label}.png")
-            if args.site:
+            if args.site and for_site:
                 save(render(win, 2), site / "screens" / f"{name}-{label}.webp", quality=80)
                 if (name, label) == ("acapella", "booth"):
                     save(social_card(win), site / "og.jpg", quality=86)

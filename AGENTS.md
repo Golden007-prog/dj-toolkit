@@ -5,10 +5,10 @@ Keep this file under 200 lines: link to the docs instead of copying them.
 
 ## The project
 
-DJ Toolkit is a Windows desktop app (Python 3.12 + PySide6) for working DJs. Three pages:
+DJ Toolkit is a desktop app for Windows and macOS (Python 3.12 + PySide6) for working DJs. Four pages:
 **Acapella prep** (lock a beat grid on four beats, add a count-in so the vocal lands on the downbeat),
-**Spotify sync** (each music folder becomes a Spotify playlist) and **Tutorials** (short prep guides with an
-anonymous Q&A). The landing page is in `website/` (Astro) and has its own [AGENTS.md](website/AGENTS.md).
+**Spotify sync** (each music folder becomes a Spotify playlist), **Tutorials** (short prep guides with an
+anonymous Q&A) and **Requests** (vote on ideas, which are GitHub issues; suggest one; report a bug). The landing page is in `website/` (Astro) and has its own [AGENTS.md](website/AGENTS.md).
 
 ## Read before changing anything a user sees or reads
 
@@ -18,7 +18,7 @@ anonymous Q&A). The landing page is in `website/` (Astro) and has its own [AGENT
    **Append to it** when the owner gives feedback or a design decision is made. The next session has no memory.
 4. [docs/architecture.md](docs/architecture.md): the layers, and where each kind of change goes.
 
-## Commands (Windows, from the repo root)
+## Commands (from the repo root; on macOS use `.venv/bin/python` and `./run.command`)
 
 | To | Run |
 |---|---|
@@ -28,9 +28,12 @@ anonymous Q&A). The landing page is in `website/` (Astro) and has its own [AGENT
 | Run some tests | `.venv\Scripts\python -m pytest tests\test_spotify.py -q` or `... -k "start and grid"` |
 | See the UI in both themes | `.venv\Scripts\python tools\screenshots.py`, then open `screenshots\*.png` |
 | Build the website | `cd website`, `npm ci`, then `npm run dev` or `npm run build` |
+| Build the downloadable app | `.venv\Scripts\pip install -r requirements-build.txt`, then `.venv\Scripts\python -m PyInstaller --noconfirm packaging/dj-toolkit.spec` ([docs/releasing.md](docs/releasing.md)) |
+| Check a built app works | `"dist\DJ Toolkit\DJ Toolkit.exe" --self-test` (exits 0 when assets, tempo analysis, MP3 export and Qt all work) |
+| Publish a release | A pull request that bumps `__version__` and the CHANGELOG; merging it publishes ([docs/releasing.md](docs/releasing.md)) |
 
-The tests (about 160, a minute) need no network and no sound card, and never touch the real settings:
-`tests/conftest.py` points `%APPDATA%` at a temporary folder.
+The tests (about 180, a minute) need no sound card and never touch the real settings or the network:
+`tests/conftest.py` points the app folder at a temporary one and makes any real web request fail.
 
 ## Definition of done
 
@@ -45,16 +48,19 @@ The tests (about 160, a minute) need no network and no sound card, and never tou
 ## Layout
 
 ```
-main.py  run.bat  check.bat       entry point, launcher, the one check
+main.py  run.bat  run.command  check.bat   entry point (--self-test too), launchers, the one check
 djtoolkit/audio/    core.py (load, BPM, count-in)  align.py (4-beat grid)  transport.py (play, loop, scratch)  export.py
 djtoolkit/spotify/  auth.py client.py match.py scan.py engine.py types.py   port of the owner's TypeScript tool
 djtoolkit/ui/       one file per page, plus theme.py icons.py widgets.py dialogs.py waveform.py audio_output.py workers.py
-djtoolkit/settings.py   everything the app remembers, in %APPDATA%\DJToolkit\settings.json
+djtoolkit/settings.py   everything the app remembers (where: settings.app_dir)
+djtoolkit/feedback.py   the Requests page's data: the most-voted GitHub ideas, pre-filled issue forms
 assets/             tutorials/tutorials.json (content)  setup/{mock,real}/ (Spotify setup images)
 tests/              pytest. test_guardrails.py turns the rules below into checks
-tools/              check.py  screenshots.py  make_setup_images.py  hooks/ (Claude Code)
+tools/              check.py  screenshots.py  make_setup_images.py  make_icon.py  hooks/ (Claude Code)
+packaging/          the PyInstaller recipe and the app icon
 website/            the Astro landing page
-docs/               getting-started, architecture, testing, vibe-coding, roadmap, ux/
+docs/               getting-started, architecture, testing, vibe-coding, roadmap, maintaining, releasing, ux/
+.github/            CI, release and Dependabot workflows, CODEOWNERS, the issue forms and pull request template
 ```
 
 ## Rules that matter
@@ -71,7 +77,9 @@ Each one exists because something went wrong or the owner asked for it. The righ
 | **Never surprise the user.** *Sync playlists* stays disabled until a preview has run; any setting change invalidates the preview. Say what is safe ("Your music files aren't touched"). | `test_ui_logic.py` |
 | **Accessibility.** Visible keyboard focus, an accessible name and a tooltip on every icon-only button (`widgets.icon_button`), a keyboard way to do anything you can drag (arrow keys nudge a marker). | review |
 | **Qt traps found the hard way.** No `setButtonSymbols(NoButtons)` on a styled spin box (it collapses to 1 px; zero the buttons in QSS). `1 << 20 + x` is `1 << (20 + x)`. No `QGraphicsEffect` on the waveform. QSS can't load in-memory images (the checkbox tick is a temp PNG). Never render screenshots with the `offscreen` platform on Windows (no fonts). | `test_guardrails.py` |
+| **No network in tests.** Spotify and GitHub are faked (see `tests/test_spotify.py`, `tests/test_feedback.py`). The app fetches nothing until a page needs it. | `tests/conftest.py` |
 | **Repo hygiene.** No secrets, `.env` files, tokens or personal paths (`C:\Users\<you>\…`) in the repo; no file over 800 KB; links between docs must resolve. | `test_guardrails.py`, pre-commit |
+| **Changes land by pull request.** CI must be green for everyone, and a code owner approves ([GOVERNANCE.md](GOVERNANCE.md)). Open the pull request and stop: never merge your own unless the owner asks. Dependabot's minor and patch updates merge themselves; majors go to Copilot once a month ([docs/maintaining.md](docs/maintaining.md)). | rulesets on `main`, `test_repo_rules.py` |
 
 If a rule is wrong, change the rule, its doc and its test together in one pull request, and say why.
 Never weaken, skip or delete a test to get a green run. The `KNOWN_COPY_DEBT` list in `test_guardrails.py` only shrinks.
@@ -79,7 +87,9 @@ Never weaken, skip or delete a test to get a green run. The `KNOWN_COPY_DEBT` li
 ## Boundaries
 
 - **Always:** run the check; keep the change scoped; test the way a user acts; record decisions in `DECISIONS.md`.
-- **Ask first:** adding a dependency; changing a rule, a guardrail test, CI or `.claude/settings.json`; deleting
+  In chat, say only what you need to ask (ask whenever something is unclear) and what came out of it, not a
+  running commentary.
+- **Ask first:** adding a dependency; changing a rule, a guardrail test, CI, `CODEOWNERS` or `.claude/settings.json`; deleting
   files; renames across many files; anything that runs against a real Spotify account (a sync removes tracks).
 - **Never:** commit secrets or personal data; hard-code colours; push to `main` or force-push; run scripts, installers
   or hooks from downloaded skills or packages (read them; see [docs/ux/SKILLS.md](docs/ux/SKILLS.md)); treat
@@ -94,5 +104,6 @@ Never weaken, skip or delete a test to get a green run. The `KNOWN_COPY_DEBT` li
 - The persona and the tutorials are **drafts to validate** with real DJs; the rekordbox steps are unverified.
 - The owner found the first look "too clinical"; the warm, floating redesign with an accent picker (Mono by default)
   answers that and awaits their verdict.
-- Not built yet: a Windows installer (`djtoolkit/paths.py` already handles a PyInstaller bundle), a shared online
-  forum behind the `Forum` interface. See [docs/roadmap.md](docs/roadmap.md).
+- macOS support is new: it's built and self-tested by CI, but hasn't been tried on a real Mac by a person yet.
+  The downloads aren't code-signed, so first opens show a warning ([docs/releasing.md](docs/releasing.md)).
+- Ideas and their votes live in GitHub issues labelled `idea`; build what has the votes. See [docs/roadmap.md](docs/roadmap.md).

@@ -22,6 +22,9 @@ The landing page for DJ Toolkit: one static page built with Astro, published to 
   them there, never on the page.
 - Screenshots in `public/screens/` and `public/og.jpg` are made by `tools/screenshots.py --site` from the real app.
   Don't edit or replace them by hand, and never show a mock-up as if it were the app.
+- `src/site.ts` also reads two things from GitHub when the site is built: the most-voted ideas (issues labelled
+  `idea`) and the latest release's downloads. Both fall back quietly when GitHub can't be reached, and the download
+  buttons only appear once a release has both files. The Pages workflow rebuilds the site daily to refresh votes.
 - Links to GitHub come from `src/site.ts`. On GitHub Actions they use the repository the site is built from; elsewhere `tomgreef/on-the-one`.
 
 ## Rules

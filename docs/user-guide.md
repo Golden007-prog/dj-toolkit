@@ -1,6 +1,6 @@
 # User guide
 
-Everything the app does, on one page. Start it with `run.bat`.
+Everything the app does, on one page. On macOS, read Cmd wherever it says Ctrl.
 
 ## Acapella prep: two steps
 
@@ -43,11 +43,19 @@ Short guides with one recommendation each: folder structure, folders to rekordbo
 Spotify playlists. Disagree with one? Post a question or a challenge below it. You appear as *Anonymous DJ #xxxx*,
 and for now posts stay on your computer.
 
+## Requests
+
+Vote on what gets built next. The page lists the most-wanted ideas, which are GitHub issues; **Vote** opens one on
+GitHub, where a thumbs-up counts as a vote (you need a free GitHub account). **Suggest a feature** and **Report a bug**
+open short forms on GitHub, with your app version already filled in. The app never asks for a login, and fetches the
+list only when you open the page.
+
 ## What it remembers
 
 The four beats and the start for each file you've worked on, the folder each dialog last used (with a fallback if
 it's gone), your count-in and export choices, the window, the page, the last tutorial, and the look.
-All of it lives in `%APPDATA%\DJToolkit`. Delete that folder to start fresh.
+All of it lives in `%APPDATA%\DJToolkit` on Windows and `~/Library/Application Support/DJToolkit` on macOS.
+Delete that folder to start fresh.
 
 ## Looks
 

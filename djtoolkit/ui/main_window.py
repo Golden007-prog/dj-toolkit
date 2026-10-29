@@ -18,10 +18,11 @@ from PySide6.QtWidgets import (
 from ..settings import Settings
 from . import theme
 from .acapella_tab import AcapellaTab
+from .requests_tab import RequestsTab
 from .setup_guide import SetupGuide
 from .sync_tab import SyncTab
 from .tutorials_tab import TutorialsTab
-from .widgets import AccentPicker, BrandMark, Segmented, bind_icon
+from .widgets import AccentPicker, BrandMark, Segmented, bind_icon, keys
 
 SP = theme.SP
 
@@ -46,6 +47,7 @@ class MainWindow(QMainWindow):
         self.sync = SyncTab(self.settings)
         self.sync.openSetupGuide.connect(self.open_guide)
         self.tutorials = TutorialsTab(settings=self.settings)
+        self.requests = RequestsTab()
 
         # ---- sidebar: product name, then destinations, then appearance
         side = QFrame()
@@ -71,6 +73,7 @@ class MainWindow(QMainWindow):
         pages = [
             ("Prep", [("Acapella prep", "waveform", self.acapella), ("Spotify sync", "playlist", self.sync)]),
             ("Learn", [("Tutorials", "book", self.tutorials)]),
+            ("Community", [("Requests", "upvote", self.requests)]),
         ]
         index = 0
         for group, items in pages:
@@ -82,7 +85,7 @@ class MainWindow(QMainWindow):
                 b.setObjectName("nav")
                 b.setCheckable(True)
                 b.setCursor(Qt.CursorShape.PointingHandCursor)
-                b.setToolTip(f"{label}  (Ctrl+{index + 1})")
+                b.setToolTip(f"{label}  ({keys(f'Ctrl+{index + 1}')})")
                 bind_icon(b, icon_name, 18)
                 self._nav.addButton(b, index)
                 sl.addWidget(b)

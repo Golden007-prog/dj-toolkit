@@ -1,6 +1,6 @@
 """Claude Code hooks for this repo, wired in .claude/settings.json through tools/hooks/run.sh.
 
-after-edit  (PostToolUse on Edit/Write): ruff fixes and formats the Python file Claude just changed.
+after-edit  (PostToolUse on Edit/Write): ruff sorts the imports of the Python file Claude just changed and formats it.
 stop-gate   (Stop): if Python files changed and lint, format or the guardrail tests fail, Claude is told what failed
             and asked to fix it before finishing. It never blocks twice in a row, so it can't loop.
 
@@ -36,7 +36,9 @@ def after_edit(event: dict) -> int:
         path.resolve().relative_to(ROOT)
     except ValueError:
         return 0  # not this repo's file
-    _run(PY, "-m", "ruff", "check", "--fix", "--exit-zero", "--quiet", str(path))
+    # Only sort imports and format. Removing "unused" imports here would delete one an agent added a moment before
+    # the edit that uses it; the stop gate and CI still catch any that stay unused.
+    _run(PY, "-m", "ruff", "check", "--fix", "--select", "I", "--exit-zero", "--quiet", str(path))
     _run(PY, "-m", "ruff", "format", "--quiet", str(path))
     return 0
 

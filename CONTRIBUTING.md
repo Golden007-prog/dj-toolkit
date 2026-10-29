@@ -4,11 +4,35 @@ Thanks for helping. DJ Toolkit is small, so a good change is small too.
 
 ## Ways to help
 
+- **Vote on what comes next.** Every idea is an issue labelled
+  [`idea`](https://github.com/tomgreef/on-the-one/issues?q=is%3Aissue+is%3Aopen+label%3Aidea+sort%3Areactions-%2B1-desc),
+  and a thumbs-up reaction is a vote (please don't comment "+1"). The website and the app's Requests page list the
+  most-voted ones. You can suggest an idea or report a bug from either, too.
 - **DJ feedback, no code needed.** Try it on a real acapella or your own folders, and tell us what felt off.
   Open an issue and pick *DJ feedback*.
 - **Argue with the drafts.** The tutorials and the persona ([docs/ux/PERSONA.md](docs/ux/PERSONA.md)) are guesses
   written to be challenged. "I'd do this differently, because…" is exactly what we want.
-- **Fix or build something.** Start with the [roadmap](docs/roadmap.md), or an issue labelled `good first issue`.
+- **Fix or build something.** Start with an issue labelled `good first issue` or `help wanted`, or the
+  [roadmap](docs/roadmap.md).
+
+## From issue to merged pull request
+
+1. **Start with an issue.** Pick a form at [New issue](https://github.com/tomgreef/on-the-one/issues/new/choose):
+   bug, idea, DJ feedback, or a change to the code, tests or docs. A typo fix can skip this step.
+2. **Triage.** A maintainer reads each new issue (label `needs triage`) within about a week, then labels it, asks a
+   question, or closes it with a reason. Issues open to anyone get `help wanted` or `good first issue`.
+3. **Claim it.** Comment that you'd like to take it and a maintainer assigns you. Nothing to show after two weeks?
+   It's open to others again, no hard feelings.
+4. **Build it** on a branch of your fork (`git switch -c fix/short-name`, or `feature/`, `docs/`), following
+   [AGENTS.md](AGENTS.md): the rules and the definition of done, for people and AI agents alike. Changing anything
+   a user sees or reads? Read [docs/ux/VOICE.md](docs/ux/VOICE.md) first, and afterwards run
+   `.venv\Scripts\python tools\screenshots.py` and look at both themes. Run `check.bat --fix` until it passes.
+5. **Open a pull request** that says `Fixes #123`, and fill in the template. Not finished yet? Open it as a draft
+   to get early feedback.
+6. **Review.** CI must pass, a code owner approves (see [GOVERNANCE.md](GOVERNANCE.md)), and every conversation is
+   resolved. Expect a first review within a week. New commits need a fresh approval.
+7. **Merge.** A maintainer squash-merges it: the pull request's title becomes the commit on `main`, and the issue
+   closes.
 
 ## Set up (Windows, about five minutes)
 
@@ -21,17 +45,9 @@ py -3.12 -m venv .venv
 check.bat
 ```
 
-`check.bat` runs what CI runs: lint, format and about 160 tests (a minute, no network, no sound card).
-More detail, and fixes for common setup problems: [docs/getting-started.md](docs/getting-started.md).
-
-## Make a change
-
-1. Branch from `main`: `git switch -c fix/short-name`.
-2. Read [AGENTS.md](AGENTS.md): the rules and the definition of done. It's written for AI agents and people alike.
-3. Changing anything a user sees or reads? Read [docs/ux/VOICE.md](docs/ux/VOICE.md) first, and afterwards run
-   `.venv\Scripts\python tools\screenshots.py` and look at both themes.
-4. Run `check.bat --fix` until it passes.
-5. Open a pull request and fill in the template. For UI changes, attach before and after screenshots.
+`check.bat` runs what CI runs: lint, format and about 180 tests (a minute, no network, no sound card).
+On macOS, use `.venv/bin/python tools/check.py`. More detail, and fixes for common setup problems:
+[docs/getting-started.md](docs/getting-started.md).
 
 ## What makes a pull request easy to merge
 
@@ -41,7 +57,13 @@ More detail, and fixes for common setup problems: [docs/getting-started.md](docs
   gets a line in [CHANGELOG.md](CHANGELOG.md) under *Unreleased*.
 - **AI-assisted is welcome.** You're still the author: read every line, run the check, and say in the pull request
   what the agent did. [docs/vibe-coding.md](docs/vibe-coding.md) has the workflow that works here.
-- Commit messages: plain and imperative, under 72 characters, like `Snap the start marker to the grid`.
+- A title that's plain and imperative, under 72 characters, like `Snap the start marker to the grid`. It becomes
+  the commit message.
+- A first-time contributor's CI waits until a maintainer starts it. That's GitHub's safety default, not a judgement.
+
+## Grow with the project
+
+Regular contributors become collaborators, and then maintainers of an area. [GOVERNANCE.md](GOVERNANCE.md) says how.
 
 ## Be kind, and report security problems privately
 

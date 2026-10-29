@@ -1,9 +1,10 @@
-"""Persistent user settings, stored as JSON under %APPDATA%\\DJToolkit."""
+"""Persistent user settings, stored as JSON in the app folder (see `app_dir`)."""
 
 from __future__ import annotations
 
 import json
 import os
+import sys
 from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 
@@ -24,8 +25,17 @@ def nearest_existing_dir(path: str | Path | None) -> str:
 
 
 def app_dir() -> Path:
-    base = os.environ.get("APPDATA")
-    root = Path(base) / "DJToolkit" if base else Path.home() / ".djtoolkit"
+    """Where the app keeps what it remembers: %APPDATA%\\DJToolkit on Windows, ~/Library/Application Support/DJToolkit
+    on macOS, ~/.config/DJToolkit elsewhere. DJTOOLKIT_HOME overrides all of them (tests, portable use)."""
+    override = os.environ.get("DJTOOLKIT_HOME")
+    if override:
+        root = Path(override)
+    elif sys.platform == "win32" and os.environ.get("APPDATA"):
+        root = Path(os.environ["APPDATA"]) / "DJToolkit"
+    elif sys.platform == "darwin":
+        root = Path.home() / "Library" / "Application Support" / "DJToolkit"
+    else:
+        root = Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config") / "DJToolkit"
     root.mkdir(parents=True, exist_ok=True)
     return root
 

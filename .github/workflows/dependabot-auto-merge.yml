@@ -1,0 +1,38 @@
+# Dependabot's minor and patch updates merge themselves once CI is green: this approves them and turns on auto-merge.
+# The approval is enough because CODEOWNERS leaves the dependency files without an owner, and the rulesets on main
+# still require every check to pass. Major updates are labelled and wait for the monthly upgrade (major-updates.yml).
+name: Dependabot
+
+on: pull_request
+
+permissions:
+  contents: read
+
+jobs:
+  sort:
+    name: Merge minor and patch updates
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'tomgreef/on-the-one'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write # turn on auto-merge
+      pull-requests: write # approve, label
+    steps:
+      - id: meta
+        uses: dependabot/fetch-metadata@v3
+
+      - name: Approve, and merge once CI is green
+        if: steps.meta.outputs.update-type == 'version-update:semver-minor' || steps.meta.outputs.update-type == 'version-update:semver-patch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.html_url }}
+        run: |
+          gh pr review --approve "$PR" --body "A minor or patch update: it merges itself once CI is green."
+          gh pr merge --auto --squash "$PR"
+
+      - name: Label it for the monthly upgrade
+        if: steps.meta.outputs.update-type == 'version-update:semver-major'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.html_url }}
+        run: gh pr edit "$PR" --add-label "major update"

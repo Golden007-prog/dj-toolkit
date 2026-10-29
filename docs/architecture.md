@@ -8,6 +8,7 @@ flowchart LR
     MW[main_window] --> AT[acapella_tab]
     MW --> ST[sync_tab]
     MW --> TT[tutorials_tab]
+    MW --> RT[requests_tab]
     AT --> WV[waveform]
     AT --> AO[audio_output]
     ST --> WK[workers: QThread]
@@ -17,19 +18,22 @@ flowchart LR
     SP["spotify/: scan, auth, client, match, engine"]
     SE[settings]
     TU[tutorials]
+    FB[feedback]
   end
   AT --> AU
   AO -- "pulls audio" --> AU
   WK --> SP
   ui --> SE
   TT --> TU
+  RT --> FB
+  FB --> GH(["GitHub issues: ideas and votes"])
   SE --> FS[("%APPDATA%\DJToolkit")]
   SP --> API(["Spotify Web API"])
 ```
 
 ## The rules that keep it this shape
 
-- `audio/`, `spotify/`, `settings.py` and `tutorials.py` don't import Qt or the UI (a guardrail test checks).
+- `audio/`, `spotify/`, `settings.py`, `tutorials.py` and `feedback.py` don't import Qt or the UI (a guardrail test checks).
   They report through callbacks: `run_sync(settings, dry_run, log=..., progress=..., cancelled=...)`.
 - Slow work (loading audio, tempo analysis, everything Spotify) runs off the UI thread in `ui/workers.py`
   (`Task` for one call, `SyncWorker` for a sync), which turns results and errors into Qt signals.
@@ -85,4 +89,7 @@ folder that exists. The token, the search memory, reports and the tutorial posts
 | Tutorials | `assets/tutorials/tutorials.json` (one sentence and 2 to 4 short steps; a test enforces it) |
 | The discussion backend | `djtoolkit/tutorials.py` (the `Forum` interface; `LocalForum` today) |
 | Spotify setup guide text and images | `djtoolkit/ui/setup_guide.py`, `tools/make_setup_images.py`, `assets/setup/real/` |
+| Requests: the ideas list and the GitHub forms | `djtoolkit/feedback.py`, `djtoolkit/ui/requests_tab.py` |
+| Where the app keeps its data, per system | `djtoolkit/settings.py` (`app_dir`) |
+| The downloadable app | `packaging/dj-toolkit.spec`, `main.py` (`--self-test`), `.github/workflows/release.yml` |
 | The landing page | `website/` (see `website/AGENTS.md`) |

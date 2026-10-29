@@ -1,7 +1,8 @@
 # Roadmap
 
-Where things stand, and what would help most. Open an issue before starting anything big, so two people don't
-build the same thing.
+Where things stand, and what would help most. The ideas themselves, with their votes, are the
+[issues labelled `idea`](https://github.com/tomgreef/on-the-one/issues?q=is%3Aissue+is%3Aopen+label%3Aidea+sort%3Areactions-%2B1-desc).
+Open an issue before starting anything big, so two people don't build the same thing.
 
 ## Status
 
@@ -11,7 +12,8 @@ build the same thing.
 | Spotify sync | Ported from the owner's TypeScript tool and unit-tested; the matcher gave identical results on 1,000 real tracks. **Not yet run against a live Spotify app.** |
 | Tutorials | Drafts. The rekordbox steps are unverified. Posts stay on your computer for now. |
 | Persona and voice | An assumption, not research ([PERSONA.md](ux/PERSONA.md) lists the questions to ask DJs). |
-| Install | From source only. No installer yet. |
+| Install | Downloads for Windows and macOS (Apple silicon) from GitHub Releases, unsigned for now. See [releasing.md](releasing.md). |
+| Requests | Ideas are GitHub issues labelled `idea`; a thumbs-up is a vote. The app and the website list the most-voted. |
 
 ## Good first issues
 
@@ -27,11 +29,19 @@ build the same thing.
 
 - **Try it with real acapellas, by ear.** Report where the suggestion lands, and whether the tap timing feels late
   (it assumes a fixed 50 ms output delay that may need calibrating).
-- **A Windows installer** with PyInstaller. `djtoolkit/paths.py` already finds assets inside a bundle.
+- **Signed downloads**, so Windows and macOS stop warning on first open (needs paid certificates), and an Intel Mac build.
 - **A shared, anonymous forum** for the tutorials, behind the existing `Forum` interface in `djtoolkit/tutorials.py`.
 - **Interview a few working DJs** with the questions at the end of [PERSONA.md](ux/PERSONA.md), and update it.
 
+## How the project runs
+
+Work on the repository itself, the things mature open-source projects do: issues labelled
+[`security`](https://github.com/tomgreef/on-the-one/issues?q=is%3Aissue+is%3Aopen+label%3Asecurity),
+[`ci`](https://github.com/tomgreef/on-the-one/issues?q=is%3Aissue+is%3Aopen+label%3Aci) and
+[`community`](https://github.com/tomgreef/on-the-one/issues?q=is%3Aissue+is%3Aopen+label%3Acommunity).
+Many are small and well explained, good for a first change.
+
 ## Ideas, not yet decided
 
-Hearing the start marker while you scratch; snapping markers to onsets as you drag; an 8- or 16-bar phrase view;
-time-stretching to a target BPM; batch mode for a folder of acapellas; macOS support.
+Hearing the start marker while you scratch; snapping markers to onsets as you drag. The rest of the ideas are issues
+labelled `idea`: vote for the ones you want, or add your own.

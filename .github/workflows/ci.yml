@@ -1,3 +1,5 @@
+# The job names below are required checks on main (ruleset "Checks must pass", docs/maintaining.md).
+# Rename one and every pull request waits for the old name: update the ruleset in the same change.
 name: CI
 
 on:
@@ -15,9 +17,13 @@ concurrency:
 
 jobs:
   app:
-    name: App (lint, format, tests)
-    runs-on: windows-latest
-    timeout-minutes: 20
+    name: App on ${{ matrix.os }} (lint, format, tests)
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v7
         with:
@@ -51,3 +57,17 @@ jobs:
           cache-dependency-path: website/package-lock.json
       - run: npm ci
       - run: npm run build
+
+  dependencies:
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Refuse new dependencies with known vulnerabilities
+        uses: actions/dependency-review-action@v5
+        with:
+          fail-on-severity: moderate

@@ -7,8 +7,9 @@ check.bat --fix                                      :: let ruff fix what it can
 .venv\Scripts\python -m pytest -k "start and grid"   :: tests whose names match
 ```
 
-About 160 tests, about a minute. No network, no sound card, and never your real settings: `tests/conftest.py`
-points `%APPDATA%` at a temporary folder and runs Qt without a window.
+About 170 tests, about a minute. No sound card, never your real settings, and never the network:
+`tests/conftest.py` points the app folder at a temporary one, makes any real web request fail, and runs Qt without
+a window. The built app has a check of its own, `--self-test` (see [releasing.md](releasing.md)).
 
 ## What is covered
 
@@ -22,6 +23,7 @@ points `%APPDATA%` at a temporary folder and runs Qt without a window.
 | `test_settings_memory.py` | Remembered folders and per-file work, and their fallbacks |
 | `test_ui_logic.py` | Preview before sync, dialogs, the setup guide, tutorials, window state, looks and accents |
 | `test_theme.py` | Contrast of every colour pair in every mode and accent |
+| `test_feedback.py` | The most-voted ideas, the pre-filled GitHub forms, the Requests page, and that tests can't use the network |
 | `test_guardrails.py` | The project's rules, as checks (below) |
 
 ## Writing a test

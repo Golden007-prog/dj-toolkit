@@ -39,6 +39,7 @@ _PATHS = {
     "metronome": '<path d="M8 21h8l2-16H6z"/><path d="M12 16l4-9M9 21v-3h6v3"/>',
     "trash": '<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 10v6M14 10v6"/>',
     "send": '<path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/>',
+    "upvote": '<path d="M12 4l7 8h-4v8H9v-8H5z"/>',
 }
 
 

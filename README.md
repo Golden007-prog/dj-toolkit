@@ -5,12 +5,13 @@
 
 # DJ Toolkit
 
-Prep tools for working DJs. Free, open source, for Windows.
+Prep tools for working DJs. Free and open source, for Windows and macOS.
 
 - **Acapella prep.** Lock the beat grid on four beats at the chorus, mark where the vocal comes in, and export it
   with a count-in. It lands on the downbeat, first time.
 - **Spotify sync.** Each music folder becomes a Spotify playlist. You see every change before anything changes.
 - **Tutorials.** Short, opinionated prep guides you can question, anonymously.
+- **Requests.** Vote on what gets built next, suggest a feature or report a bug, right from the app.
 
 Two looks: **Booth** for dark rooms and late-night prep, **Daylight** for a laptop in the sun.
 See it, and try the four-beat lock, on the [website](https://tomgreef.github.io/on-the-one/).
@@ -18,20 +19,20 @@ See it, and try the four-beat lock, on the [website](https://tomgreef.github.io/
 > **Early days.** It's tested with generated audio and about 160 automated tests, but not yet with many real
 > acapellas or a live Spotify account. Try it and [tell us what felt off](CONTRIBUTING.md#ways-to-help).
 
-## Run it
+## Install
 
-You need Windows 10 or 11 and [Python 3.12](https://www.python.org/downloads/).
+Download it from the [latest release](https://github.com/tomgreef/on-the-one/releases/latest). Nothing else to install.
 
-```bat
-git clone https://github.com/tomgreef/on-the-one.git
-cd on-the-one
-py -3.12 -m venv .venv
-.venv\Scripts\pip install -r requirements.txt
-run.bat
-```
+**Windows 10 and 11:** unzip `DJ-Toolkit-Windows.zip`, open the folder and double-click **DJ Toolkit**.
+If Windows says it protected your PC, choose **More info**, then **Run anyway**.
 
-Your settings and your Spotify login stay on your computer, in `%APPDATA%\DJToolkit`. Exports are saved as new
-files, and your music files are never changed. How to use it: [docs/user-guide.md](docs/user-guide.md).
+**macOS 12 or later (Apple silicon):** open `DJ-Toolkit-macOS.dmg` and drag DJ Toolkit into Applications.
+If macOS says it can't check the app, open **System Settings > Privacy & Security** and choose **Open Anyway**.
+
+The warnings appear because the app isn't signed with a paid certificate yet; all of its code is here.
+Your settings and your Spotify login stay on your computer, exports are saved as new files, and your music files are
+never changed. How to use it: [docs/user-guide.md](docs/user-guide.md).
+Prefer to run it from source? [docs/getting-started.md](docs/getting-started.md) takes about five minutes.
 
 ## Help build it
 
@@ -39,12 +40,13 @@ DJs, designers, writers and developers are all welcome, and AI-assisted work is 
 
 | I want to | Read |
 |---|---|
-| Report a bug, share DJ feedback or make a first change | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| Vote on ideas, report a bug or make a first change | [CONTRIBUTING.md](CONTRIBUTING.md) |
 | Get it running for development | [docs/getting-started.md](docs/getting-started.md) |
 | Understand how it fits together | [docs/architecture.md](docs/architecture.md) |
 | Work with an AI coding agent | [docs/vibe-coding.md](docs/vibe-coding.md) (agents read [AGENTS.md](AGENTS.md)) |
 | Know who it's for and how it talks | [docs/ux/](docs/ux/README.md) |
 | Find something to build | [docs/roadmap.md](docs/roadmap.md) |
+| Grow from first pull request to maintainer | [GOVERNANCE.md](GOVERNANCE.md) |
 
 ## Licence
 
