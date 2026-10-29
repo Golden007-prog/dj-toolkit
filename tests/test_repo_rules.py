@@ -1,11 +1,14 @@
-"""The repository's own rules: who approves what, and what Dependabot may merge alone. GitHub enforces the rest
-(docs/maintaining.md); these catch a change here that would quietly break it."""
+"""The repository's own rules: who approves what, what Dependabot may merge alone, and that every dependency has a
+documented reason. GitHub enforces the rest (docs/maintaining.md); these catch a change here that would quietly
+break it."""
 
+import json
 import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 GITHUB = ROOT / ".github"
+DEPENDENCIES_PAGE = ROOT / "docs" / "dependencies.md"
 
 
 def _dependency_files() -> list[str]:
@@ -30,6 +33,37 @@ def _dependabot() -> dict[tuple[str, str], str]:
         directory = re.search(r"^\s+directory: (\S+)", block, re.M)
         blocks[(block.split()[0], directory.group(1) if directory else "")] = block
     return blocks
+
+
+def _package_key(name: str) -> str:
+    """`PySide6`, `pyside6` and `Imageio_FFmpeg` name the same Python package: compare without case, `-`, `_` and `.`."""
+    return re.sub(r"[-_.]+", "-", name).lower()
+
+
+def _declared_packages() -> dict[str, tuple[str, str]]:
+    """Every direct dependency: its comparable name -> (the name as written, the file that names it)."""
+    declared = {}
+    for path in sorted(ROOT.glob("requirements*.txt")):
+        for line in path.read_text("utf8").splitlines():
+            line = line.split("#")[0].strip()
+            if line and not line.startswith("-"):  # `-r requirements.txt` pulls in another file
+                found = re.match(r"([A-Za-z0-9][A-Za-z0-9._-]*)\s*(\[[^\]]*\])?\s*([=<>!~;@]|$)", line)
+                assert found, f"{path.name}: can't find a package name in {line!r}"
+                declared.setdefault(_package_key(found.group(1)), (found.group(1), path.name))
+    site = json.loads((ROOT / "website" / "package.json").read_text("utf8"))
+    for name in [*site.get("dependencies", {}), *site.get("devDependencies", {})]:
+        declared.setdefault(_package_key(name), (name, "website/package.json"))
+    return declared
+
+
+def _documented_packages() -> dict[str, tuple[str, list[str]]]:
+    """Each row of docs/dependencies.md: its comparable name -> (the name as written, the other cells)."""
+    rows = {}
+    for line in DEPENDENCIES_PAGE.read_text("utf8").splitlines():
+        if re.match(r"\|\s*`[^`]+`\s*\|", line):  # the header and the divider have no backticks
+            name, *cells = (cell.strip() for cell in line.strip().strip("|").split("|"))
+            rows[_package_key(name.strip("`"))] = (name.strip("`"), cells)
+    return rows
 
 
 def test_the_owner_approves_everything_but_the_dependency_files():
@@ -85,3 +119,32 @@ def test_every_issue_form_waits_for_triage():
     for form in forms:
         labels = re.search(r"^labels: \[(.*)\]$", form.read_text("utf8"), re.M)
         assert labels and '"needs triage"' in labels.group(1), form.name
+
+
+def test_every_dependency_has_a_documented_row():
+    documented = _documented_packages()
+    missing = [f"  {name} (in {file})" for key, (name, file) in _declared_packages().items() if key not in documented]
+    assert not missing, (
+        "A dependency needs a documented reason. Add one row to docs/dependencies.md for each of these:\n"
+        + "\n".join(missing)
+        + "\nWrite what it is for, its licence, who publishes it and where its source is, and the date it was checked "
+        "(docs/maintaining.md, 'Auditing an outside pull request', step 6)."
+    )
+
+
+def test_every_documented_dependency_is_still_used():
+    declared = _declared_packages()
+    stale = [name for key, (name, _) in _documented_packages().items() if key not in declared]
+    assert not stale, (
+        "docs/dependencies.md has a row for a package that no dependency file names any more: "
+        + ", ".join(stale)
+        + ".\nDelete the row, or put the package back if you removed it by mistake."
+    )
+
+
+def test_every_dependency_row_is_filled_in():
+    unfinished = [name for name, cells in _documented_packages().values() if len(cells) != 4 or not all(cells)]
+    assert not unfinished, (
+        "These rows in docs/dependencies.md need all five cells filled in (Package, Used for, Licence, "
+        "Publisher and source repository, Checked): " + ", ".join(unfinished)
+    )

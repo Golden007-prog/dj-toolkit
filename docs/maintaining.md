@@ -62,7 +62,8 @@ them too and reports to the owner. It never approves or merges ([AGENTS.md](../A
 5. **Accidental edits.** Deleted text, reformatting, regenerated files: ask for them to be put back.
 6. **Dependencies.** A new one never rides along with another change: ask for an issue first. Check the package: its
    exact name (a typo of a popular one?), publisher, first release date, source repository, install-time scripts,
-   licence, and why nothing we already have will do. The owner decides.
+   licence, and why nothing we already have will do. The owner decides. The answers go in a row of
+   [dependencies.md](dependencies.md), and a test fails until the package has one.
 7. **Run it in the right place.** CI is the sandbox. Don't run a pull request on a machine that holds credentials; if
    you must, use a throwaway container with no tokens, after reading the diff.
 8. **Report, then approve.** Tell the owner what you found and your verdict. Start CI only after the audit, and approve
