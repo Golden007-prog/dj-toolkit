@@ -102,7 +102,7 @@ jobs:
   publish:
     name: Publish ${{ needs.version.outputs.tag }}
     needs: [version, build]
-    if: needs.version.outputs.publish == 'true'
+    if: needs.version.outputs.publish == 'true' && github.repository == 'tomgreef/dj-toolkit' # not in a fork
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
