@@ -5,6 +5,8 @@
 
 # DJ Toolkit
 
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/tomgreef/dj-toolkit/badge)](https://scorecard.dev/viewer/?uri=github.com/tomgreef/dj-toolkit)
+
 Prep tools for working DJs. Free and open source, for Windows and macOS.
 
 - **Acapella prep.** Lock the beat grid on four beats at the chorus, mark where the vocal comes in, and export it

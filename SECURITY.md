@@ -43,7 +43,7 @@ The latest release, and `main`.
 - **Protected `main`:** changes arrive by pull request, a code owner approves, CI must pass, and published release
   tags can't be moved ([GOVERNANCE.md](GOVERNANCE.md)).
 - **Least privilege in CI:** workflows get a read-only token unless a job asks for more, never keep the checkout's
-  credentials, and use only GitHub's own actions.
+  credentials, and use only GitHub's own actions (the one exception is OpenSSF Scorecard's, pinned to a commit).
 
 ## For contributors
 

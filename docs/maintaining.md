@@ -108,6 +108,15 @@ Leave it on: it's your look at what Copilot wrote before CI runs it.
 What's switched on is listed in [SECURITY.md](../SECURITY.md). Alerts arrive in the **Security** tab and by email;
 a private vulnerability report should get a reply within a week.
 
+[OpenSSF Scorecard](https://scorecard.dev) scores the repository's supply-chain habits from 0 to 10 (protected
+branches, pinned dependencies, read-only tokens, tests in CI). [`scorecard.yml`](../.github/workflows/scorecard.yml)
+runs it on every push to `main` and once a week; to run it now, use *Run workflow* on **Scorecard** in the Actions tab.
+The score is the badge at the top of the README. The
+[full report](https://scorecard.dev/viewer/?uri=github.com/tomgreef/dj-toolkit) says what to fix first, and the
+findings are also under *Security > Code scanning*. Each one worth fixing becomes its own issue. The workflow uses the
+one third-party action here, `ossf/scorecard-action`, pinned to a commit. Scorecard only accepts results from a
+workflow with a single job and no top-level `env`, so leave that layout as it is.
+
 ## Releasing
 
 A release is a pull request that bumps the version: [releasing.md](releasing.md).
