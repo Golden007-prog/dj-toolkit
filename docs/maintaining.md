@@ -19,6 +19,11 @@ blocks nothing; the owner adds it to the first ruleset once it has stayed green.
 **Renaming a CI job?** The first ruleset waits for the old name and blocks every pull request. Update the ruleset in
 the same change.
 
+**Not required yet:** [`zizmor.yml`](../.github/workflows/zizmor.yml) (*Workflow security (zizmor)*) reads the workflow
+files for mistakes CodeQL doesn't look for, such as an action not pinned to a commit or a token with more permission
+than a job needs. It shows what it finds as annotations on the pull request and never fails a run. Once its findings are
+fixed, remove `continue-on-error` from the workflow and add `Workflow security (zizmor)` to *Checks must pass*.
+
 Also set: squash merging only (a pull request is one commit on `main`), branches deleted after merging, auto-merge
 allowed, workflows get a read-only token unless they ask for more, and every outside contributor's workflow runs wait
 for **Approve and run workflows** (*Settings > Actions > General*, "Require approval for all external contributors").
