@@ -25,18 +25,13 @@ MP3 named `Name - 128bpm.ext`, with the BPM tagged.
 | Open, preview, export | `Ctrl+O`, `Ctrl+P`, `Ctrl+E` |
 
 ## Spotify sync: each folder becomes a playlist
-
 1. **Link Spotify.** The six-step guide walks you through creating a Spotify app, setting its Redirect URI to
-   `http://127.0.0.1:8888/callback`, pasting the Client ID and approving access.
+   `http://127.0.0.1:8888/callback`, pasting the Client ID and approving access. If you changed the Callback port via More, update this URI to match.
 2. **Choose your music folder.** Every folder inside it becomes a playlist.
 3. **Preview changes** first. **Sync playlists** unlocks after a preview, because syncing removes tracks that are no
    longer in a folder. Changing any setting asks for a fresh preview. Your music files are never touched.
 4. Spotify limits how many searches a new app can make in a day. Keep *Spotify searches per run* around 150 until your
    library is matched. Matches are remembered, and nothing is removed until matching is complete.
-
-Coming from the old command-line tool? **More** has *Import the old tool's .env* and *Import the old tool's
-searches*, so tracks you matched before aren't searched again.
-
 ## Tutorials
 
 Short guides with one recommendation each: folder structure, folders to rekordbox, rekordbox to USB, acapellas, and

@@ -17,6 +17,7 @@ from PySide6.QtWidgets import (
     QDoubleSpinBox,
     QHBoxLayout,
     QHeaderView,
+    QInputDialog,
     QLabel,
     QLineEdit,
     QMenu,
@@ -174,6 +175,7 @@ class SyncTab(QWidget):
         menu = QMenu(self.more_btn)
         menu.addAction("Import the old tool's .env…", self._import_env)
         menu.addAction("Import the old tool's searches…", self._import_cache)
+        menu.addAction("Callback port…", self._set_callback_port)
         self.report_action = menu.addAction("Open the unmatched report", self._open_report)
         self.report_action.setEnabled(False)
         self.more_btn.setMenu(menu)
@@ -338,6 +340,19 @@ class SyncTab(QWidget):
         QMessageBox.information(
             self, "Searches imported", f"Added {n} remembered search(es). Those tracks won't need searching again."
         )
+
+    def _set_callback_port(self) -> None:
+        port, ok = QInputDialog.getInt(
+            self,
+            "Callback port",
+            "Spotify uses this port to link to DJ Toolkit. If another app uses it, change it here, then update the Redirect URI in your Spotify app to match.",
+            self.s.callback_port,
+            1024,
+            65535,
+        )
+        if ok:
+            self.s.callback_port = port
+            self._invalidate()
 
     def _open_report(self) -> None:
         if self.summary and self.summary.report_path:

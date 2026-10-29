@@ -155,3 +155,26 @@ def test_legacy_cache_import_does_not_overwrite(tmp_path, monkeypatch):
     old.write_text(json.dumps({"q1": [{"uri": "u", "name": "n", "artists": ["a"]}], "q2": []}))
     assert engine.import_legacy_cache(old) == 2
     assert engine.import_legacy_cache(old) == 0
+
+
+def test_port_busy_error_mentions_ui():
+    import socket
+
+    import pytest
+
+    from djtoolkit.settings import Settings
+    from djtoolkit.spotify import auth
+
+    s = socket.socket()
+    s.bind(("127.0.0.1", 0))
+    busy_port = s.getsockname()[1]
+
+    settings = Settings()
+    settings.callback_port = busy_port
+
+    with pytest.raises(RuntimeError) as exc_info:
+        auth._authorize(settings, log=lambda msg: None, cancelled=lambda: False)
+
+    assert "More > Callback port" in str(exc_info.value)
+
+    s.close()

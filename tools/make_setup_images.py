@@ -211,7 +211,7 @@ def step3() -> QImage:
         [
             "Name it anything, e.g. “DJ Toolkit”.",
             "Any short description.",
-            "Redirect URI must be exactly\nhttp://127.0.0.1:8888/callback\nthen click Add. (Use 127.0.0.1, not “localhost”.)",
+            "Redirect URI must be exactly\nhttp://127.0.0.1:8888/callback\nthen click Add. (Use 127.0.0.1, not “localhost”.)\nIf you changed the Callback port in the app, use that port here.",
             "Tick Web API only.",
             "Accept the terms and click Save.",
         ],
