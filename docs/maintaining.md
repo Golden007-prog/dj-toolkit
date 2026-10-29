@@ -9,15 +9,20 @@ Three rulesets (*Settings > Rules > Rulesets*):
 
 | Ruleset | What it does | Who can skip it |
 |---|---|---|
-| **Checks must pass** (`main`) | Nothing lands until these are green: `App on windows-latest (lint, format, tests)`, `App on macos-latest (lint, format, tests)`, `Website (build)` and `Dependency review`. No force pushes, and `main` can't be deleted | Nobody |
+| **Checks must pass** (`main`) | Nothing lands until these are green: `App on windows-latest (lint, format, tests)`, `App on macos-latest (lint, format, tests)`, `App on ubuntu-latest (lint, format, tests)`, `Website (build)`, `Dependency review`, `Workflow security (zizmor)` and `Dependency files`. No force pushes, and `main` can't be deleted | Nobody |
 | **A code owner approves** (`main`) | Changes arrive by pull request, with an approval from a code owner of each changed file ([`CODEOWNERS`](../.github/CODEOWNERS)). New commits dismiss old approvals; conversations must be resolved | The owner, whose own pull requests need only green checks (GitHub doesn't let anyone approve their own) |
 | **Release tags stay put** (`v*`) | A published version can't be moved or deleted | The owner |
 
-`App on ubuntu-latest (lint, format, tests)` runs the same tests on Linux but isn't required yet, so a failure there
-blocks nothing; the owner adds it to the first ruleset once it has stayed green.
+A check that only warns gets ignored, so none of these does: a problem is fixed in the change that causes it.
 
 **Renaming a CI job?** The first ruleset waits for the old name and blocks every pull request. Update the ruleset in
 the same change.
+
+**Workflow security (zizmor)** ([`zizmor.yml`](../.github/workflows/zizmor.yml)) reads the workflow files for mistakes
+CodeQL doesn't look for, such as an action not pinned to a commit or a token with more permission than a job needs. A
+finding fails the run. Fix it in the change that causes it. If a finding is on purpose (a `pull_request_target`
+workflow that never checks out the pull request, say), mark that line `# zizmor: ignore[rule]` and write the reason
+next to it.
 
 ### Dependency files
 
@@ -26,19 +31,11 @@ its minor and patch updates. [`dependency-guard.yml`](../.github/workflows/depen
 every pull request it posts a status called **Dependency files**, which fails when anyone but Dependabot or the owner
 changed one of those files. A new dependency comes through an issue and the owner, never inside another change.
 
-The guard runs from `main` and never checks out the pull request, and it posts the status through the API on the pull
-request's last commit, because a check from `pull_request_target` isn't attached to that commit. That also means it
-can't be tried on its own pull request before it merges. To switch it on:
-
-1. Merge it, then look at the next pull request: its checks should list **Dependency files** as a status. A pull
-   request opened earlier gets one when it is pushed to, or from *Actions > Dependency guard > Run workflow*.
-2. Only then add **Dependency files** to the required checks of the *Checks must pass* ruleset. Adding it first would
-   block every pull request while it waits for a status that never comes.
-   
-**Not required yet:** [`zizmor.yml`](../.github/workflows/zizmor.yml) (*Workflow security (zizmor)*) reads the workflow
-files for mistakes CodeQL doesn't look for, such as an action not pinned to a commit or a token with more permission
-than a job needs. It shows what it finds as annotations on the pull request and never fails a run. Once its findings are
-fixed, remove `continue-on-error` from the workflow and add `Workflow security (zizmor)` to *Checks must pass*.
+The guard runs from `main` and never checks out the pull request, so the pull request can't change what it checks. It
+posts the status through the API on the pull request's last commit, because a check from `pull_request_target` isn't
+attached to that commit, and that also means a change to the guard can't be tried on its own pull request: it takes
+effect once it has merged. A pull request that was open before the guard existed gets its status from *Actions >
+Dependency guard > Run workflow* (give it the pull request's number), or when it is next pushed to.
 
 Also set: squash merging only (a pull request is one commit on `main`), branches deleted after merging, auto-merge
 allowed, workflows get a read-only token unless they ask for more, and every outside contributor's workflow runs wait
