@@ -62,7 +62,7 @@ jobs:
           node-version: 24
           cache: npm
           cache-dependency-path: website/package-lock.json
-      - run: npm ci
+      - run: npm ci --ignore-scripts # the build needs no install scripts, and a package could hide code in one
       - run: npm run build
 
   dependencies:
