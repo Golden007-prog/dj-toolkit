@@ -13,6 +13,9 @@ Three rulesets (*Settings > Rules > Rulesets*):
 | **A code owner approves** (`main`) | Changes arrive by pull request, with an approval from a code owner of each changed file ([`CODEOWNERS`](../.github/CODEOWNERS)). New commits dismiss old approvals; conversations must be resolved | The owner, whose own pull requests need only green checks (GitHub doesn't let anyone approve their own) |
 | **Release tags stay put** (`v*`) | A published version can't be moved or deleted | The owner |
 
+`App on ubuntu-latest (lint, format, tests)` runs the same tests on Linux but isn't required yet, so a failure there
+blocks nothing; the owner adds it to the first ruleset once it has stayed green.
+
 **Renaming a CI job?** The first ruleset waits for the old name and blocks every pull request. Update the ruleset in
 the same change.
 
