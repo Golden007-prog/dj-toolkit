@@ -10,8 +10,8 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QColor
+from PySide6.QtCore import Qt, QUrl, Signal
+from PySide6.QtGui import QColor, QDesktopServices
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QDoubleSpinBox,
@@ -341,7 +341,7 @@ class SyncTab(QWidget):
 
     def _open_report(self) -> None:
         if self.summary and self.summary.report_path:
-            os.startfile(self.summary.report_path)  # noqa: S606 - Windows only, user-initiated
+            QDesktopServices.openUrl(QUrl.fromLocalFile(str(self.summary.report_path)))
 
     def _confirm_sync(self) -> bool:
         box = QMessageBox(

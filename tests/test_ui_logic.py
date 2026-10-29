@@ -62,6 +62,27 @@ def test_incomplete_matching_does_not_unlock_sync(app):
     assert not t.sync_btn.isEnabled()
 
 
+def test_the_unmatched_report_opens_in_the_system_viewer(app, tmp_path, monkeypatch):
+    """`os.startfile` exists only on Windows, so the report has to open the way every system opens a file."""
+    from PySide6.QtGui import QDesktopServices
+
+    from djtoolkit.settings import Settings
+    from djtoolkit.spotify import engine
+    from djtoolkit.ui.sync_tab import SyncTab
+
+    opened = []
+    monkeypatch.setattr(QDesktopServices, "openUrl", lambda url: opened.append(url.toLocalFile()) or True)
+    report = tmp_path / "unmatched.csv"
+    report.write_text("genre,artist\n", "utf8")
+
+    t = SyncTab(Settings())
+    t._open_report()  # nothing synced yet: nothing to open
+    assert opened == []
+    t.summary = engine.SyncSummary(report_path=report)
+    t._open_report()
+    assert [Path(p) for p in opened] == [report]
+
+
 # ---------------------------------------------------------------- dialogs
 def test_file_dialogs_reopen_where_you_left_off(app, tmp_path, monkeypatch):
     from djtoolkit.settings import Settings

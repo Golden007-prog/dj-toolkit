@@ -14,6 +14,7 @@ and versions follow [Semantic Versioning](https://semver.org/). Each release's s
 
 - The Requests page loads the most-voted ideas again. Version 0.1.0 looked them up under the old repository name and
   can't find them, so update to the next release.
+- On macOS, Open the unmatched report (Spotify sync, More) now opens the report. It only worked on Windows.
 
 ## [0.1.0] - 2026-10-28
 

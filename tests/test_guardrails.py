@@ -109,6 +109,11 @@ def test_known_qt_traps_stay_fixed():
     for path in _py_files(ROOT / "djtoolkit") + _py_files(ROOT / "tools"):
         for node in ast.walk(_tree(path)):
             where = f"{_rel(path)}:{getattr(node, 'lineno', '?')}"
+            if isinstance(node, ast.Attribute) and node.attr == "startfile":
+                bad.append(
+                    f"{where} os.startfile exists only on Windows, so it crashes on macOS. "
+                    "Use QDesktopServices.openUrl(QUrl.fromLocalFile(...))."
+                )
             if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
                 if node.func.attr == "setButtonSymbols" and "NoButtons" in ast.unparse(node):
                     bad.append(
