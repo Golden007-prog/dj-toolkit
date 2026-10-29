@@ -19,7 +19,7 @@ permissions:
 jobs:
   hand-over:
     name: Hand major updates to Copilot
-    if: github.event_name != 'pull_request_target' && github.repository == 'tomgreef/on-the-one'
+    if: github.event_name != 'pull_request_target' && github.repository == 'tomgreef/dj-toolkit'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:

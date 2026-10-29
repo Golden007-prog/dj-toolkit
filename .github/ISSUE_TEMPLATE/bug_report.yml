@@ -36,7 +36,7 @@ body:
     id: version
     attributes:
       label: App version
-      description: Filled in from the app. Running from source? Paste `git log -1 --format=%h` from the on-the-one folder.
+      description: Filled in from the app. Running from source? Paste `git log -1 --format=%h` from the dj-toolkit folder.
   - type: textarea
     id: log
     attributes:

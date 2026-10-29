@@ -11,7 +11,7 @@ permissions:
 jobs:
   sort:
     name: Merge minor and patch updates
-    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'tomgreef/on-the-one'
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.repository == 'tomgreef/dj-toolkit'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:

@@ -1,7 +1,7 @@
 # Roadmap
 
 Where things stand, and what would help most. The ideas themselves, with their votes, are the
-[issues labelled `idea`](https://github.com/tomgreef/on-the-one/issues?q=is%3Aissue+is%3Aopen+label%3Aidea+sort%3Areactions-%2B1-desc).
+[issues labelled `idea`](https://github.com/tomgreef/dj-toolkit/issues?q=is%3Aissue+is%3Aopen+label%3Aidea+sort%3Areactions-%2B1-desc).
 Open an issue before starting anything big, so two people don't build the same thing.
 
 ## Status
@@ -36,9 +36,9 @@ Open an issue before starting anything big, so two people don't build the same t
 ## How the project runs
 
 Work on the repository itself, the things mature open-source projects do: issues labelled
-[`security`](https://github.com/tomgreef/on-the-one/issues?q=is%3Aissue+is%3Aopen+label%3Asecurity),
-[`ci`](https://github.com/tomgreef/on-the-one/issues?q=is%3Aissue+is%3Aopen+label%3Aci) and
-[`community`](https://github.com/tomgreef/on-the-one/issues?q=is%3Aissue+is%3Aopen+label%3Acommunity).
+[`security`](https://github.com/tomgreef/dj-toolkit/issues?q=is%3Aissue+is%3Aopen+label%3Asecurity),
+[`ci`](https://github.com/tomgreef/dj-toolkit/issues?q=is%3Aissue+is%3Aopen+label%3Aci) and
+[`community`](https://github.com/tomgreef/dj-toolkit/issues?q=is%3Aissue+is%3Aopen+label%3Acommunity).
 Many are small and well explained, good for a first change.
 
 ## Ideas, not yet decided

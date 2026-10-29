@@ -5,6 +5,16 @@ and versions follow [Semantic Versioning](https://semver.org/). Each release's s
 
 ## [Unreleased]
 
+### Changed
+
+- The repository is now `tomgreef/dj-toolkit`, to match the name of the app, and the website moved to
+  `tomgreef.github.io/dj-toolkit/`. Old repository links redirect; the old website address doesn't.
+
+### Fixed
+
+- The Requests page loads the most-voted ideas again. Version 0.1.0 looked them up under the old repository name and
+  can't find them, so update to the next release.
+
 ## [0.1.0] - 2026-10-28
 
 ### Added

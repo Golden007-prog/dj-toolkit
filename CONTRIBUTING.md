@@ -5,7 +5,7 @@ Thanks for helping. DJ Toolkit is small, so a good change is small too.
 ## Ways to help
 
 - **Vote on what comes next.** Every idea is an issue labelled
-  [`idea`](https://github.com/tomgreef/on-the-one/issues?q=is%3Aissue+is%3Aopen+label%3Aidea+sort%3Areactions-%2B1-desc),
+  [`idea`](https://github.com/tomgreef/dj-toolkit/issues?q=is%3Aissue+is%3Aopen+label%3Aidea+sort%3Areactions-%2B1-desc),
   and a thumbs-up reaction is a vote (please don't comment "+1"). The website and the app's Requests page list the
   most-voted ones. You can suggest an idea or report a bug from either, too.
 - **DJ feedback, no code needed.** Try it on a real acapella or your own folders, and tell us what felt off.
@@ -17,7 +17,7 @@ Thanks for helping. DJ Toolkit is small, so a good change is small too.
 
 ## From issue to merged pull request
 
-1. **Start with an issue.** Pick a form at [New issue](https://github.com/tomgreef/on-the-one/issues/new/choose):
+1. **Start with an issue.** Pick a form at [New issue](https://github.com/tomgreef/dj-toolkit/issues/new/choose):
    bug, idea, DJ feedback, or a change to the code, tests or docs. A typo fix can skip this step.
 2. **Triage.** A maintainer reads each new issue (label `needs triage`) within about a week, then labels it, asks a
    question, or closes it with a reason. Issues open to anyone get `help wanted` or `good first issue`.
@@ -37,8 +37,8 @@ Thanks for helping. DJ Toolkit is small, so a good change is small too.
 ## Set up (Windows, about five minutes)
 
 ```bat
-git clone https://github.com/<you>/on-the-one.git
-cd on-the-one
+git clone https://github.com/<you>/dj-toolkit.git
+cd dj-toolkit
 py -3.12 -m venv .venv
 .venv\Scripts\pip install -r requirements-dev.txt
 .venv\Scripts\pre-commit install

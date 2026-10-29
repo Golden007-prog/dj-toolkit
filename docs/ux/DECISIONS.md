@@ -6,6 +6,26 @@ Format: what was asked → what we did → why → what is still open.
 
 ---
 
+## 2026-10-29: The repository is called dj-toolkit
+
+**Owner request.** The repository was `on-the-one` but everything a user sees says "DJ Toolkit". Rename the repository
+to `dj-toolkit`, and change the code so everything keeps working.
+
+**What we did.** The owner renamed the repository on GitHub. This change updates every mention of the old name: the
+docs, the issue forms, the website's fallback links, the two workflows that only run on this repository, and the
+repository name the app searches for ideas (`djtoolkit/feedback.py`). The product name, the Python package
+(`djtoolkit`) and the data folder (`DJToolkit`) stay as they are.
+
+**Why it needed care.** GitHub redirects the old repository, issue, clone and release-download links, but not two
+things. GitHub Pages: the site must be deployed again under `tomgreef.github.io/dj-toolkit/`, and the old address
+stops working. GitHub's search API: it answers 422 to `repo:tomgreef/on-the-one`, so the Requests page in version
+0.1.0 can't load ideas. Only a new release fixes that.
+
+**Open.** Publish the next release soon, for the Requests page. "On the one" is still the tagline and the idea behind
+the project; only the repository's name changed.
+
+---
+
 ## 2026-10-28: Who approves what, roles, Dependabot and security
 
 **Owner request.** "I need to approve all PRs, otherwise this might go crazy", while letting developers grow from
@@ -122,9 +142,9 @@ trackers, no web fonts, no third-party requests; Astro's telemetry is switched o
 1440, 768 and 390 px in both looks; two class-name collisions between page and component styles were found that way
 and fixed (page classes now have page-only names).
 
-**Published** the same day at [github.com/tomgreef/on-the-one](https://github.com/tomgreef/on-the-one), with
+**Published** the same day at [github.com/tomgreef/dj-toolkit](https://github.com/tomgreef/dj-toolkit), with
 GitHub Pages (built by Actions) and private vulnerability reporting turned on. The site:
-[tomgreef.github.io/on-the-one](https://tomgreef.github.io/on-the-one/).
+[tomgreef.github.io/dj-toolkit](https://tomgreef.github.io/dj-toolkit/).
 
 **Open.** The owner has seen the website in the preview but hasn't given a verdict yet.
 

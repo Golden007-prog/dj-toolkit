@@ -14,14 +14,14 @@ Prep tools for working DJs. Free and open source, for Windows and macOS.
 - **Requests.** Vote on what gets built next, suggest a feature or report a bug, right from the app.
 
 Two looks: **Booth** for dark rooms and late-night prep, **Daylight** for a laptop in the sun.
-See it, and try the four-beat lock, on the [website](https://tomgreef.github.io/on-the-one/).
+See it, and try the four-beat lock, on the [website](https://tomgreef.github.io/dj-toolkit/).
 
 > **Early days.** It's tested with generated audio and about 160 automated tests, but not yet with many real
 > acapellas or a live Spotify account. Try it and [tell us what felt off](CONTRIBUTING.md#ways-to-help).
 
 ## Install
 
-Download it from the [latest release](https://github.com/tomgreef/on-the-one/releases/latest). Nothing else to install.
+Download it from the [latest release](https://github.com/tomgreef/dj-toolkit/releases/latest). Nothing else to install.
 
 **Windows 10 and 11:** unzip `DJ-Toolkit-Windows.zip`, open the folder and double-click **DJ Toolkit**.
 If Windows says it protected your PC, choose **More info**, then **Run anyway**.

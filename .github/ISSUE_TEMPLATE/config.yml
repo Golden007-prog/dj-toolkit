@@ -1,8 +1,8 @@
 blank_issues_enabled: true
 contact_links:
   - name: Vote on ideas
-    url: https://github.com/tomgreef/on-the-one/issues?q=is%3Aissue+is%3Aopen+label%3Aidea+sort%3Areactions-%2B1-desc
+    url: https://github.com/tomgreef/dj-toolkit/issues?q=is%3Aissue+is%3Aopen+label%3Aidea+sort%3Areactions-%2B1-desc
     about: Every open idea, most-voted first. A thumbs-up reaction on an issue is a vote.
   - name: Download DJ Toolkit
-    url: https://github.com/tomgreef/on-the-one/releases/latest
+    url: https://github.com/tomgreef/dj-toolkit/releases/latest
     about: The latest build for Windows and macOS, with install steps.

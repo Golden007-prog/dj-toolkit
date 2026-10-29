@@ -8,8 +8,8 @@ You need [Python 3.12](https://www.python.org/downloads/) (64-bit, from python.o
 launcher) and [Git](https://git-scm.com/download/win). For the website you also need [Node.js 24](https://nodejs.org/).
 
 ```bat
-git clone https://github.com/<you>/on-the-one.git
-cd on-the-one
+git clone https://github.com/<you>/dj-toolkit.git
+cd dj-toolkit
 py -3.12 -m venv .venv
 .venv\Scripts\pip install -r requirements-dev.txt
 .venv\Scripts\pre-commit install

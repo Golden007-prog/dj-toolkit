@@ -17,7 +17,7 @@ import requests
 
 from . import __version__
 
-REPO = "tomgreef/on-the-one"
+REPO = "tomgreef/dj-toolkit"
 REPO_URL = f"https://github.com/{REPO}"
 SEARCH_URL = "https://api.github.com/search/issues"
 ALL_IDEAS_URL = f"{REPO_URL}/issues?q=is%3Aissue+is%3Aopen+label%3Aidea+sort%3Areactions-%2B1-desc"

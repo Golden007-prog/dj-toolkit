@@ -17,7 +17,7 @@ A release is a pull request that bumps the version. When it merges, the download
 Nothing is published if a build or a self-test fails: fix it in another pull request, and the release happens when
 that one merges. Published version tags can't be moved or deleted (ruleset *Release tags stay put*).
 
-The file names never change, so `https://github.com/tomgreef/on-the-one/releases/latest/download/DJ-Toolkit-Windows.zip`
+The file names never change, so `https://github.com/tomgreef/dj-toolkit/releases/latest/download/DJ-Toolkit-Windows.zip`
 always points at the newest build. The website shows its download buttons only once a release has both files.
 
 ## Build it yourself

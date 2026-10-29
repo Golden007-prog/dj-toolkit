@@ -34,7 +34,7 @@ past maintainers. You're welcome back any time.
 
 - **Small things** are decided in the pull request, by the maintainer who reviews it.
 - **What gets built next:** the votes on
-  [ideas](https://github.com/tomgreef/on-the-one/issues?q=is%3Aissue+is%3Aopen+label%3Aidea+sort%3Areactions-%2B1-desc)
+  [ideas](https://github.com/tomgreef/dj-toolkit/issues?q=is%3Aissue+is%3Aopen+label%3Aidea+sort%3Areactions-%2B1-desc)
   guide it. The maintainers decide and say why in the issue.
 - **Rules and big changes** (a new dependency, the persona, the voice, these roles) start as an issue. If no
   maintainer objects within a week, they go ahead. When people disagree, the owner decides and records it in
