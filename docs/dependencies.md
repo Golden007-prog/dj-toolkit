@@ -2,7 +2,8 @@
 
 Every package this project installs on purpose, and why it is here: one row for each package named in
 `requirements.txt`, `requirements-dev.txt`, `requirements-build.txt` and `website/package.json`. What those packages
-install in turn isn't listed.
+install in turn isn't listed (each release's `.cdx.json` lists those too: see
+[Check a download](releasing.md#check-a-download)).
 
 A test (`tests/test_repo_rules.py`) fails when a package has no row here, or a row names a package no dependency file
 mentions any more. A new package then never arrives as one more quiet line: it arrives with its reason, ready for the
