@@ -113,6 +113,24 @@ def test_every_action_is_pinned_to_a_full_commit_sha():
     assert not unpinned, "pin each action to a 40-character commit SHA, version as a comment:\n" + "\n".join(unpinned)
 
 
+def test_every_pre_commit_hook_repository_is_pinned_to_a_full_commit_sha():
+    """The hooks run on a contributor's machine at every commit, and a tag can be moved to other code, a commit can't."""
+    unpinned = []
+    revs = 0
+    for number, line in enumerate((ROOT / ".pre-commit-config.yaml").read_text("utf8").splitlines(), 1):
+        rev = re.match(r"\s*rev:\s*(\S+)(.*)", line)
+        if rev:
+            revs += 1
+            if not (
+                re.fullmatch(r"[0-9a-f]{40}", rev.group(1)) and re.fullmatch(r"\s*# frozen: v?\d\S*", rev.group(2))
+            ):
+                unpinned.append(f".pre-commit-config.yaml:{number}: {line.strip()}")
+    assert revs, "no `rev:` found in .pre-commit-config.yaml: has the file changed shape?"
+    assert not unpinned, (
+        "pin each hook repository to a 40-character commit SHA, `# frozen: vX.Y.Z` after it:\n" + "\n".join(unpinned)
+    )
+
+
 def test_the_dependency_guard_watches_every_dependency_file_and_cannot_be_edited_by_a_pull_request():
     flow = (GITHUB / "workflows" / "dependency-guard.yml").read_text("utf8")
     watched = re.search(r'^\s+deps="([^"]+)"$', flow, re.M).group(1).split()

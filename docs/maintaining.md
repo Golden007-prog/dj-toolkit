@@ -115,6 +115,18 @@ Every action in `.github/workflows/` is pinned to a full commit SHA, with its ve
 on any that isn't. Dependabot's `github-actions` updates move the SHA and the comment together, so the pins stay
 current; keep the comment in the `# vX.Y.Z` form.
 
+The commit hooks in [`.pre-commit-config.yaml`](../.pre-commit-config.yaml) are pinned the same way, as
+`rev: <sha> # frozen: vX.Y.Z`, and a test fails on any `rev:` that isn't. Dependabot isn't set up for them, so nothing
+proposes an update: look when you bump `ruff` in `requirements-dev.txt`, which the `ruff-pre-commit` version has to
+match, and now and then otherwise. To update one, run `.venv/bin/pre-commit autoupdate --freeze` (it downloads each hook
+repository, so read the diff afterwards), or find the commit by hand and write both the SHA and the version:
+
+```
+gh api repos/astral-sh/ruff-pre-commit/git/ref/tags/vX.Y.Z --jq .object
+```
+
+If `type` is `tag`, run `gh api repos/astral-sh/ruff-pre-commit/git/tags/<sha> --jq .object.sha` to get the commit.
+
 ### One-time setup: let the workflow assign Copilot
 
 GitHub lets only a person assign Copilot, so the workflow needs the owner's token. Until it has one, the monthly
