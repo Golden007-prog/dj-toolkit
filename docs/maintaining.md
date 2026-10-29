@@ -81,6 +81,11 @@ hijacked version has time to be caught. Security fixes don't wait.
   writes merges on its own. Dependabot then closes its own pull request.
 - **Can't wait for the month to end** (a security fix in a major version)? Run *Major updates* from the Actions tab.
 
+Every action in `.github/workflows/` is pinned to a full commit SHA, with its version in a trailing comment
+(`uses: actions/checkout@<sha> # v7.0.1`), because a tag can be moved to other code and a commit can't. A test fails
+on any that isn't. Dependabot's `github-actions` updates move the SHA and the comment together, so the pins stay
+current; keep the comment in the `# vX.Y.Z` form.
+
 ### One-time setup: let the workflow assign Copilot
 
 GitHub lets only a person assign Copilot, so the workflow needs the owner's token. Until it has one, the monthly

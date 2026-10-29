@@ -68,6 +68,17 @@ def test_only_dependabots_minor_and_patch_updates_merge_without_the_owner():
     assert not offenders, f"only dependabot-auto-merge.yml may approve or merge a pull request: {offenders}"
 
 
+def test_every_action_is_pinned_to_a_full_commit_sha():
+    """A tag can be moved to other code, a commit can't. Local actions (./...) are exempt."""
+    unpinned = []
+    for flow in sorted((GITHUB / "workflows").glob("*.y*ml")):
+        for number, line in enumerate(flow.read_text("utf8").splitlines(), 1):
+            used = re.match(r"\s*(?:- )?uses:\s*(\S+)", line)
+            if used and not used.group(1).startswith("./") and not re.search(r"@[0-9a-f]{40}$", used.group(1)):
+                unpinned.append(f"{flow.name}:{number}: {used.group(1)}")
+    assert not unpinned, "pin each action to a 40-character commit SHA, version as a comment:\n" + "\n".join(unpinned)
+
+
 def test_every_issue_form_waits_for_triage():
     forms = [f for f in sorted((GITHUB / "ISSUE_TEMPLATE").glob("*.yml")) if f.name != "config.yml"]
     assert forms
