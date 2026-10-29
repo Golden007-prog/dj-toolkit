@@ -24,6 +24,13 @@ finding fails the run. Fix it in the change that causes it. If a finding is on p
 workflow that never checks out the pull request, say), mark that line `# zizmor: ignore[rule]` and write the reason
 next to it.
 
+**Workflow syntax (actionlint)** ([`actionlint.yml`](../.github/workflows/actionlint.yml)) checks that the workflow
+files are valid: a misspelled expression, a `needs:` that names no job, a `run:` script that shellcheck flags. A finding
+fails the run, so fix it in the change that causes it. actionlint isn't a GitHub action, so the workflow downloads one
+pinned release with `gh` and stops unless the archive matches the SHA-256 written in the file. Dependabot can't see that
+pin: to move it, change `VERSION` and `SHA256` together, taking the checksum from the release's
+`actionlint_<version>_checksums.txt`. It can't check the inputs of an action pinned to a commit.
+
 ### Dependency files
 
 `requirements*.txt` and `website/package*.json` have no code owner, so Dependabot's own approval is enough to merge

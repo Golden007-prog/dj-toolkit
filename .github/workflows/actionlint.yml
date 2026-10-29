@@ -1,0 +1,37 @@
+# Checks that the workflow files are valid (docs/maintaining.md): a misspelled expression, an input an action doesn't
+# have, a `run:` script shellcheck dislikes. A typo like that otherwise shows up only when the workflow runs.
+# actionlint is not a GitHub action, so this downloads one pinned release and refuses it unless its SHA-256 matches.
+# To move to a new release, change VERSION and SHA256 together (the checksum is in the release's
+# actionlint_<version>_checksums.txt). It runs on every pull request, with no paths filter, so that it can be a
+# required check without leaving a pull request waiting.
+name: Workflow syntax
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  actionlint:
+    name: Workflow syntax (actionlint)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Download actionlint and check its checksum
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: 1.7.12
+          SHA256: 8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8 # the linux_amd64 archive
+        run: |
+          cd "$RUNNER_TEMP"
+          gh release download "v$VERSION" --repo rhysd/actionlint --pattern "actionlint_${VERSION}_linux_amd64.tar.gz"
+          echo "$SHA256  actionlint_${VERSION}_linux_amd64.tar.gz" | sha256sum --check --strict
+          tar -xzf "actionlint_${VERSION}_linux_amd64.tar.gz" actionlint
+      - name: Check the workflows
+        run: |
+          "$RUNNER_TEMP/actionlint" -color
