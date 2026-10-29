@@ -27,7 +27,7 @@ anonymous Q&A) and **Requests** (vote on ideas, which are GitHub issues; suggest
 | **Check everything CI checks** | `.venv\Scripts\python tools\check.py` (`--fix` lets ruff fix what it can first) |
 | Run some tests | `.venv\Scripts\python -m pytest tests\test_spotify.py -q` or `... -k "start and grid"` |
 | See the UI in both themes | `.venv\Scripts\python tools\screenshots.py`, then open `screenshots\*.png` |
-| Build the website | `cd website`, `npm ci`, then `npm run dev` or `npm run build` |
+| Build the website | `cd website`, `npm ci --ignore-scripts`, then `npm run dev` or `npm run build` |
 | Build the downloadable app | `.venv\Scripts\pip install -r requirements-build.txt`, then `.venv\Scripts\python -m PyInstaller --noconfirm packaging/dj-toolkit.spec` ([docs/releasing.md](docs/releasing.md)) |
 | Check a built app works | `"dist\DJ Toolkit\DJ Toolkit.exe" --self-test` (exits 0 when assets, tempo analysis, MP3 export and Qt all work) |
 | Publish a release | A pull request that bumps `__version__` and the CHANGELOG; merging it publishes ([docs/releasing.md](docs/releasing.md)) |

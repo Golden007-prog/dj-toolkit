@@ -4,7 +4,7 @@ The landing page, built with [Astro](https://astro.build/) and published to GitH
 
 ```bat
 cd website
-npm ci
+npm ci --ignore-scripts
 npm run dev
 ```
 
