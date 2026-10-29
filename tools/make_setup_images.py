@@ -211,13 +211,13 @@ def step3() -> QImage:
         [
             "Name it anything, e.g. “DJ Toolkit”.",
             "Any short description.",
-            "Redirect URI must be exactly\nhttp://127.0.0.1:8888/callback\nthen click Add. (Use 127.0.0.1, not “localhost”.)\nIf you changed the Callback port in the app, use that port here.",
+            "Redirect URI must be exactly\nhttp://127.0.0.1:8888/callback\nthen click Add. (Use 127.0.0.1, not “localhost”.)",
             "Tick Web API only.",
             "Accept the terms and click Save.",
         ],
         330,
     )
-    caption(p, "Fill in the form. The redirect URI must match exactly")
+    caption(p, "Fill in the form. The redirect URI must match exactly. Use your own port here if you changed it.")
     p.end()
     return img
 

@@ -127,6 +127,10 @@ class Settings:
         for k, v in raw.items():
             if k in known:
                 setattr(s, k, v)
+
+        # Fallback to 8888 if the loaded port is not an integer or out of range
+        if not isinstance(s.callback_port, int) or not (1024 <= s.callback_port <= 65535):
+            s.callback_port = 8888
         return s
 
     def save(self) -> None:

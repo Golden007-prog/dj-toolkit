@@ -5,6 +5,10 @@ and versions follow [Semantic Versioning](https://semver.org/). Each release's s
 
 ## [Unreleased]
 
+### Added
+
+- You can change the Spotify callback port (Spotify sync, More, Callback port) if something else uses 8888.
+
 ## [0.1.1] - 2026-10-29
 
 ### Changed
@@ -17,6 +21,7 @@ and versions follow [Semantic Versioning](https://semver.org/). Each release's s
 - The Requests page loads the most-voted ideas again. Version 0.1.0 looked them up under the repository's old name and
   can't find them, so update to this version.
 - On macOS, Open the unmatched report (Spotify sync, More) now opens the report. It only worked on Windows.
+
 
 ## [0.1.0] - 2026-10-28
 
