@@ -148,3 +148,18 @@ def test_every_dependency_row_is_filled_in():
         "These rows in docs/dependencies.md need all five cells filled in (Package, Used for, Licence, "
         "Publisher and source repository, Checked): " + ", ".join(unfinished)
     )
+
+
+def test_a_workflow_on_pull_request_target_never_checks_out_the_pull_request():
+    """pull_request_target hands a fork's pull request a token that can write, so nothing in the workflow may fetch
+    or run the pull request's code. A script it needs comes from main (see pr-assignment.yml)."""
+    offenders = []
+    for flow in sorted((GITHUB / "workflows").glob("*.yml")):
+        code = re.sub(r"#.*", "", flow.read_text("utf8"))  # what a workflow says about itself in comments is fine
+        # Reading a commit's SHA through the API (.head.sha) is fine; fetching or checking out its code is not.
+        if re.search(r"\bpull_request_target\b", code) and re.search(
+            r"actions/checkout|pull_request\.head|head_ref|refs/pull|gh pr checkout|gh repo clone|git (?:fetch|clone)",
+            code,
+        ):
+            offenders.append(flow.name)
+    assert not offenders, f"a pull_request_target workflow must not check out the pull request's code: {offenders}"

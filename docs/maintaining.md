@@ -49,6 +49,13 @@ Ideas stay open for votes. When one is chosen, write what's in and out of scope 
   and again after each push.
 - Your own pull request: the owner can merge once CI is green; any other maintainer needs another code owner's approval.
 
+When a pull request says `Fixes #N` and issue N isn't assigned to its author, [`pr-assignment.yml`](../.github/workflows/pr-assignment.yml)
+leaves one comment asking them to comment on the issue and wait (step 3 in [CONTRIBUTING.md](../CONTRIBUTING.md)). It
+skips maintainers, Dependabot and Copilot, and never closes, labels or blocks anything, so step 1 of the audit below is
+still yours. It runs on `pull_request_target`, which gives it a token that can write to pull requests from forks, so it
+never checks out the pull request: it fetches its script from `main` (a test enforces this). To try it on an existing
+pull request, run *Pull request assignment* from the Actions tab and enter the number; it comments for real, once.
+
 ### Auditing an outside pull request
 
 The same steps for a person, a brand-new account or an AI agent, because none of them depends on trust. An agent does
