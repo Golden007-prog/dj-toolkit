@@ -1,0 +1,126 @@
+# Posts each published release in Discussions, in the Announcements category: the release's CHANGELOG notes and a link
+# to the release page, where the downloads are. It is a separate workflow, so a failure here never touches a release.
+#
+# release.yml publishes with the default token, and a release made that way doesn't start other workflows, so
+# `release: published` only fires for a release published by hand. This workflow also starts when Release finishes
+# (workflow_run) and looks for the release that run published. A version that already has an announcement is skipped.
+# Run it by hand (Actions > Announce release > Run workflow) to post an older release. Leave dry-run ticked to print
+# the post without making it. Like every workflow_run workflow it runs from main, so a change to it takes effect only
+# once it has merged. See docs/releasing.md.
+name: Announce release
+
+on:
+  release:
+    types: [published]
+  workflow_run: # zizmor: ignore[dangerous-triggers] safe: it checks out nothing and only reads which commit Release ran for
+    workflows: [Release]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag of the release to announce (like v0.2.0)
+        required: true
+        type: string
+      dry-run:
+        description: Only print the post, don't make it
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  announce:
+    name: Post the announcement
+    # Release also runs for pull requests; those never publish, so only a push run is worth a look.
+    if: github.repository == 'tomgreef/dj-toolkit' && (github.event_name != 'workflow_run' || github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      group: announce-release # two runs for one release take turns, so the second finds the first one's post
+      cancel-in-progress: false
+    permissions:
+      contents: read # read the release
+      discussions: write # the one post
+    steps:
+      - name: Post the release in Announcements
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          EVENT: ${{ github.event_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          INPUT_TAG: ${{ inputs.tag }}
+          RUN_SHA: ${{ github.event.workflow_run.head_sha }}
+          DRY_RUN: ${{ inputs.dry-run }}
+        run: |
+          set -euo pipefail
+
+          # Which release? A Release run published the one that was made for its own commit.
+          case "$EVENT" in
+            release) tag="$RELEASE_TAG" ;;
+            workflow_dispatch) tag="$INPUT_TAG" ;;
+            *) tag=$(gh api "repos/$REPO/releases?per_page=10" \
+                 --jq '[.[] | select(.target_commitish == env.RUN_SHA and .draft == false)][0].tag_name // empty') ;;
+          esac
+          if [ -z "$tag" ]; then
+            echo "The Release run for $RUN_SHA did not publish a release, so there is nothing to announce." | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          # The release body is the CHANGELOG notes, then GitHub's list of pull requests (with @names, which would
+          # notify people). It goes through files, never into this script.
+          gh release view "$tag" --repo "$REPO" --json body,url > "$RUNNER_TEMP/release.json"
+          url=$(jq -r .url "$RUNNER_TEMP/release.json")
+          jq -r .body "$RUNNER_TEMP/release.json" | awk '/^## (What.s Changed|New Contributors)/ { exit } { print }' > "$RUNNER_TEMP/notes.md"
+          {
+            echo "DJ Toolkit ${tag#v} is out, for Windows and macOS."
+            if grep -q '[^[:space:]]' "$RUNNER_TEMP/notes.md"; then
+              printf '\nWhat changed:\n'
+              cat "$RUNNER_TEMP/notes.md"
+            fi
+            printf '\nDownload it from the release page: %s\n' "$url"
+            printf '\nSomething not working after you update? Reply here, or [open an issue](https://github.com/%s/issues/new/choose).\n' "$REPO"
+          } > "$RUNNER_TEMP/post.md"
+          title="DJ Toolkit $tag"
+
+          # The Announcements category is found by its name, and the latest posts show if this one is already there.
+          # (The $names in single quotes are GraphQL variables, not shell ones.)
+          # shellcheck disable=SC2016
+          data=$(gh api graphql -f owner="${REPO%/*}" -f name="${REPO#*/}" -f query='
+            query($owner: String!, $name: String!) {
+              repository(owner: $owner, name: $name) {
+                id
+                discussionCategories(first: 25) { nodes { id name } }
+                discussions(first: 50, orderBy: {field: CREATED_AT, direction: DESC}) {
+                  nodes { title url category { name } }
+                }
+              }
+            }')
+          category=$(jq -r '.data.repository.discussionCategories.nodes[] | select(.name == "Announcements") | .id' <<< "$data")
+          if [ -z "$category" ]; then
+            echo "$REPO has no Announcements category in Discussions, so nothing was posted."
+            exit 1
+          fi
+          existing=$(jq -r --arg title "$title" \
+            'first(.data.repository.discussions.nodes[] | select(.category.name == "Announcements" and .title == $title) | .url) // empty' <<< "$data")
+          if [ -n "$existing" ]; then
+            echo "$tag is already announced: $existing. Nothing was posted." | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          if [ "$DRY_RUN" = true ]; then
+            echo "Dry run: this is what would be posted in Announcements. Nothing was posted." | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "Title: $title"
+            sed 's/^/| /' "$RUNNER_TEMP/post.md"
+            exit 0
+          fi
+
+          # shellcheck disable=SC2016
+          posted=$(gh api graphql -f repo="$(jq -r .data.repository.id <<< "$data")" -f category="$category" -f title="$title" \
+            -F body=@"$RUNNER_TEMP/post.md" --jq .data.createDiscussion.discussion.url -f query='
+            mutation($repo: ID!, $category: ID!, $title: String!, $body: String!) {
+              createDiscussion(input: {repositoryId: $repo, categoryId: $category, title: $title, body: $body}) {
+                discussion { url }
+              }
+            }')
+          echo "Posted $tag in Announcements: $posted" | tee -a "$GITHUB_STEP_SUMMARY"

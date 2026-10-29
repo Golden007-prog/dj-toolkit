@@ -13,9 +13,17 @@ A release is a pull request that bumps the version. When it merges, the download
    4. packs `DJ-Toolkit-Windows.zip` and `DJ-Toolkit-macOS.dmg`.
 3. It publishes them as release `v0.2.0`, with that version's CHANGELOG notes and the merged pull requests, then
    rebuilds the website so the download buttons point at the new files.
+4. When that run finishes, `.github/workflows/announce-release.yml` posts the release in Discussions, in
+   *Announcements*: the CHANGELOG notes and a link to the release page. It is a separate workflow, so a failure
+   there never touches the release.
 
 Nothing is published if a build or a self-test fails: fix it in another pull request, and the release happens when
 that one merges. Published version tags can't be moved or deleted (ruleset *Release tags stay put*).
+
+A release made with the default token doesn't start other workflows, so the announcement starts when the Release run
+finishes (and when you publish a release by hand). A version that already has an announcement is skipped: delete the
+discussion to post it again. To post an older release, or to read the post before it goes out, run *Announce release*
+from the Actions tab: enter the tag, and leave *dry-run* ticked to print the post without making it.
 
 The file names never change, so `https://github.com/tomgreef/dj-toolkit/releases/latest/download/DJ-Toolkit-Windows.zip`
 always points at the newest build. The website shows its download buttons only once a release has both files.
