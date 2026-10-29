@@ -42,6 +42,7 @@ DJs, designers, writers and developers are all welcome, and AI-assisted work is 
 
 | I want to | Read |
 |---|---|
+| Ask a question, or talk DJ | [Discussions](https://github.com/tomgreef/dj-toolkit/discussions) |
 | Vote on ideas, report a bug or make a first change | [CONTRIBUTING.md](CONTRIBUTING.md) |
 | Get it running for development | [docs/getting-started.md](docs/getting-started.md) |
 | Understand how it fits together | [docs/architecture.md](docs/architecture.md) |
