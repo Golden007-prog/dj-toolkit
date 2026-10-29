@@ -59,7 +59,9 @@ On macOS, use `.venv/bin/python tools/check.py`. More detail, and fixes for comm
   what the agent did. [docs/vibe-coding.md](docs/vibe-coding.md) has the workflow that works here.
 - A title that's plain and imperative, under 72 characters, like `Snap the start marker to the grid`. It becomes
   the commit message.
-- A first-time contributor's CI waits until a maintainer starts it. That's GitHub's safety default, not a judgement.
+- Every outside pull request waits for a maintainer to read it and start its CI, after each push. That's how we keep
+  everyone's code and downloads safe, not a judgement of you. It's why a pull request that changes one thing is
+  merged faster than one that changes five, and why a new dependency needs its own issue first.
 
 ## Grow with the project
 

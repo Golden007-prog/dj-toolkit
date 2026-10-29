@@ -56,6 +56,18 @@ def test_major_updates_never_merge_themselves():
     assert "semver-minor" in condition and "semver-patch" in condition and "semver-major" not in condition
 
 
+def test_only_dependabots_minor_and_patch_updates_merge_without_the_owner():
+    """What an agent writes, Copilot included, waits for a person: no other workflow approves or merges."""
+    offenders = []
+    for flow in sorted((GITHUB / "workflows").glob("*.yml")):
+        if flow.name != "dependabot-auto-merge.yml":
+            if re.search(
+                r"gh pr merge|gh pr review\b[^\n]*--approve|--auto\b|enablePullRequestAutoMerge", flow.read_text("utf8")
+            ):
+                offenders.append(flow.name)
+    assert not offenders, f"only dependabot-auto-merge.yml may approve or merge a pull request: {offenders}"
+
+
 def test_every_issue_form_waits_for_triage():
     forms = [f for f in sorted((GITHUB / "ISSUE_TEMPLATE").glob("*.yml")) if f.name != "config.yml"]
     assert forms

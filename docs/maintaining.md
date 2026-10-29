@@ -17,7 +17,8 @@ Three rulesets (*Settings > Rules > Rulesets*):
 the same change.
 
 Also set: squash merging only (a pull request is one commit on `main`), branches deleted after merging, auto-merge
-allowed, and workflows get a read-only token unless they ask for more.
+allowed, workflows get a read-only token unless they ask for more, and every outside contributor's workflow runs wait
+for **Approve and run workflows** (*Settings > Actions > General*, "Require approval for all external contributors").
 
 ## Triage, once a week
 
@@ -36,8 +37,33 @@ Ideas stay open for votes. When one is chosen, write what's in and out of scope 
 - Review against the definition of done in [AGENTS.md](../AGENTS.md). For a change people will see, look at the
   screenshots in both themes.
 - Approve, then **Squash and merge**, or turn on **auto-merge** to merge as soon as CI passes.
-- A first-time contributor's CI waits for **Approve and run workflows**. Read the change first, `.github/` above all.
+- An outside contributor's CI waits for **Approve and run workflows**, every time. Audit the change first, as below,
+  and again after each push.
 - Your own pull request: the owner can merge once CI is green; any other maintainer needs another code owner's approval.
+
+### Auditing an outside pull request
+
+The same steps for a person, a brand-new account or an AI agent, because none of them depends on trust. An agent does
+them too and reports to the owner. It never approves or merges ([AGENTS.md](../AGENTS.md)).
+
+1. **One issue.** The pull request says `Fixes #N`, issue N is assigned to its author, and everything in it serves that
+   issue. Anything else, even a good fix, becomes its own issue.
+2. **The author.** How old the account is, what else it has done, whether the description matches the code. A new
+   account changes how closely you read, never whether you do.
+3. **The files.** List all of them and read these twice: dependency files (`requirements*.txt`,
+   `website/package*.json`), `.github/` (workflows, `CODEOWNERS`, Dependabot), `packaging/`, `tools/`,
+   `tests/conftest.py`, `main.py`, and any binary, minified or encoded file, submodule or symlink.
+4. **Every line.** Look for new URLs, network calls, `subprocess`, `eval`, `exec`, `pickle`, anything that reads
+   `settings.json`, Spotify tokens or `.env`, and in a workflow `pull_request_target`, `secrets.` or a download piped
+   into a shell. For an image, check it is the image the change needs and nothing else.
+5. **Accidental edits.** Deleted text, reformatting, regenerated files: ask for them to be put back.
+6. **Dependencies.** A new one never rides along with another change: ask for an issue first. Check the package: its
+   exact name (a typo of a popular one?), publisher, first release date, source repository, install-time scripts,
+   licence, and why nothing we already have will do. The owner decides.
+7. **Run it in the right place.** CI is the sandbox. Don't run a pull request on a machine that holds credentials; if
+   you must, use a throwaway container with no tokens, after reading the diff.
+8. **Report, then approve.** Tell the owner what you found and your verdict. Start CI only after the audit, and approve
+   only once CI is green and the owner agrees.
 
 ## Dependencies
 
@@ -49,9 +75,10 @@ hijacked version has time to be caught. Security fixes don't wait.
   auto-merge, so they merge once CI is green. Nothing to do unless CI fails.
 - **Major updates** arrive one per pull request, labelled `major update`, and wait. On the last day of each month,
   [`major-updates.yml`](../.github/workflows/major-updates.yml) opens an issue for each one and assigns it to
-  Copilot, which reads the migration guide and opens a pull request. When it's done, look at it and click
-  **Approve and run workflows** (and **Ready for review** if it's still a draft): auto-merge turns on, and it merges
-  once CI is green. Dependabot then closes its own pull request.
+  Copilot, which reads the migration guide and opens a pull request. Copilot is an AI agent that reads pages from the
+  web, so its pull request is audited like any other (above). Read it, click **Approve and run workflows** (and
+  **Ready for review** if it's still a draft), then approve and merge it yourself once CI is green. Nothing it
+  writes merges on its own. Dependabot then closes its own pull request.
 - **Can't wait for the month to end** (a security fix in a major version)? Run *Major updates* from the Actions tab.
 
 ### One-time setup: let the workflow assign Copilot

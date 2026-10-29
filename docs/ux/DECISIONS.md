@@ -6,6 +6,30 @@ Format: what was asked → what we did → why → what is still open.
 
 ---
 
+## 2026-10-29: Every outside and AI-written change waits for the owner
+
+**Owner request.** After a new account sent its first pull request: people, and the AI agents they use, might try to
+sneak in something harmful, such as a dependency that steals data. Make rules so every change is inspected and the
+owner controls all the work agents provide.
+
+**What we did.** `AGENTS.md` says what an agent does with a pull request it didn't write: audit it, report, never
+approve, merge or start CI, and never run it on a machine that holds credentials. `docs/maintaining.md` has the
+checklist (one issue, the author, the files, every line, accidental edits, dependencies, where to run it, report then
+approve). GitHub now holds the workflow runs of every outside contributor, not just first-timers (*Settings >
+Actions > General*). Copilot's monthly major updates no longer turn on auto-merge: the owner reads and merges them.
+`test_repo_rules.py` fails if any workflow other than Dependabot's minor and patch flow approves or merges a pull request.
+
+**Why.** Copilot reads migration guides from the web, which an attacker can write, and the old flow merged what it
+produced once CI was green, with the owner's token and no review. CI can't tell a harmless dependency from a harmful
+one: `Dependency review` only knows about published vulnerabilities.
+
+**Still open.** Dependabot's minor and patch updates still merge themselves once CI is green, after a seven-day
+cooldown: the owner's call. The dependency files have no code owner, so a future second maintainer could approve a
+change to them alone (#59). Python dependencies are pinned by version, not by hash (#60). A new dependency isn't yet
+forced to come with a written reason (#61), and the website's install scripts still run (#62).
+
+---
+
 ## 2026-10-29: The repository is called dj-toolkit
 
 **Owner request.** The repository was `on-the-one` but everything a user sees says "DJ Toolkit". Rename the repository
