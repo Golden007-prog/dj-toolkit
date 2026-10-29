@@ -76,6 +76,11 @@ still yours. It runs on `pull_request_target`, which gives it a token that can w
 never checks out the pull request: it fetches its script from `main` (a test enforces this). To try it on an existing
 pull request, run *Pull request assignment* from the Actions tab and enter the number; it comments for real, once.
 
+A pull request that names no issue gets one comment too, asking which issue it is for (step 1), unless every file it
+changes is a Markdown file or under `docs/`: the check can't tell a typo from a larger docs change. The comment has its
+own marker, so it and the one above don't stop each other, and the same people are skipped. To decide, the check reads
+the list of changed files through the GitHub CLI, never the files themselves.
+
 ### Auditing an outside pull request
 
 The same steps for a person, a brand-new account or an AI agent, because none of them depends on trust. An agent does

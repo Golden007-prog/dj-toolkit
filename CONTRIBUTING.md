@@ -20,7 +20,8 @@ Thanks for helping. DJ Toolkit is small, so a good change is small too.
 ## From issue to merged pull request
 
 1. **Start with an issue.** Pick a form at [New issue](https://github.com/tomgreef/dj-toolkit/issues/new/choose):
-   bug, idea, DJ feedback, or a change to the code, tests or docs. A typo fix can skip this step.
+   bug, idea, DJ feedback, or a change to the code, tests or docs. A typo fix in the docs can skip this step; a pull
+   request from outside that names no issue and changes more than the docs gets a comment asking which issue it is for.
 2. **Triage.** A maintainer reads each new issue (label `needs triage`) within about a week, then labels it, asks a
    question, or closes it with a reason. Issues open to anyone get `help wanted` or `good first issue`.
 3. **Claim it.** Comment that you'd like to take it and a maintainer assigns you. Nothing to show after two weeks?
