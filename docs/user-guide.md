@@ -1,5 +1,7 @@
 # User guide
 
+[Read this guide in Chinese (中文)](zh/user-guide.md)
+
 Everything the app does, on one page. On macOS, read Cmd wherever it says Ctrl.
 
 ## Acapella prep: two steps
