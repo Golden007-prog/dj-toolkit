@@ -1,6 +1,7 @@
 """Theme, icons, Spotify sync gating, tutorials and dialogs."""
 
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -298,3 +299,26 @@ def test_floating_panels_paint_a_card_with_a_shadow_below_it(app):
         edge = img.pixelColor(img.width() // 2, img.height() - b - 3 + 6)  # just under the card's bottom edge
         assert edge.alpha() > 0  # the soft shadow is painted there, not left empty
     theme.apply(app, "dark", theme.DEFAULT_ACCENT)
+
+
+def test_callback_port_updates_on_ok(app):
+    from djtoolkit.settings import Settings
+    from djtoolkit.ui.sync_tab import SyncTab
+
+    t = SyncTab(Settings())
+    assert t.s.callback_port == 8888
+
+    with patch("djtoolkit.ui.sync_tab.QInputDialog.getInt", return_value=(9999, True)):
+        t._set_callback_port()
+        assert t.s.callback_port == 9999
+
+
+def test_callback_port_unchanged_on_cancel(app):
+    from djtoolkit.settings import Settings
+    from djtoolkit.ui.sync_tab import SyncTab
+
+    t = SyncTab(Settings())
+
+    with patch("djtoolkit.ui.sync_tab.QInputDialog.getInt", return_value=(8888, False)):
+        t._set_callback_port()
+        assert t.s.callback_port == 8888

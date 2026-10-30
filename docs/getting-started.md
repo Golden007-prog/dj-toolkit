@@ -58,6 +58,6 @@ every page in both looks into `screenshots\`, using a demo vocal and a throwaway
 | `py` isn't recognised | Install Python from python.org, not the Microsoft Store, or call `python` by its full path |
 | `pip install` fails building something | You're on another Python version, or 32-bit Python. Use 64-bit Python 3.12 |
 | "No audio output found" in the app | Windows sees no sound device. You can still place beats by eye; the tests don't need audio |
-| Linking Spotify says port 8888 is busy | Close whatever uses it, or set `callback_port` in `%APPDATA%\DJToolkit\settings.json` and use the same port in your Spotify app's Redirect URI |
+| Linking Spotify says port 8888 is busy | Close whatever uses it, or open More > Callback port in the app to change it, then update the Redirect URI in your Spotify app to match |
 | `check.bat` fails on formatting | Run `check.bat --fix` |
 | You're worried tests touch your settings | They can't: `tests/conftest.py` points `%APPDATA%` at a temporary folder |

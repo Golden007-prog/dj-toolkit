@@ -7,6 +7,7 @@ and versions follow [Semantic Versioning](https://semver.org/). Each release's s
 
 ### Added
 
+- You can change the Spotify callback port (Spotify sync, More, Callback port) if something else uses 8888.
 - You can now check a download. GitHub keeps a signed record of where each file was built, and the release has a
   `SHA256SUMS.txt` to check it arrived whole. How:
   [Check a download](https://github.com/tomgreef/dj-toolkit/blob/main/docs/releasing.md#check-a-download).

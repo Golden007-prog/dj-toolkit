@@ -122,7 +122,8 @@ def _authorize(
         server = HTTPServer(("127.0.0.1", s.callback_port), Handler)
     except OSError as e:
         raise RuntimeError(
-            f"Port {s.callback_port} is busy ({e}). Close whatever uses it or change the callback port."
+            f"Port {s.callback_port} can't be used ({e}). Close whatever uses it, or open More > Callback port in the "
+            "app to change it, then update the Redirect URI in your Spotify app to match."
         ) from e
     server.timeout = 0.5
     log("Opening your browser to authorize Spotify…")

@@ -217,7 +217,7 @@ def step3() -> QImage:
         ],
         330,
     )
-    caption(p, "Fill in the form. The redirect URI must match exactly")
+    caption(p, "Fill in the form. The redirect URI must match exactly. Use your own port here if you changed it.")
     p.end()
     return img
 
