@@ -68,7 +68,7 @@ jobs:
           python-version: "3.12"
           cache: pip
           cache-dependency-path: requirements*.txt
-      - run: python -m pip install --require-hashes -r requirements-build.txt # fails unless every package has a hash and its file matches
+      - run: "python -m pip install --require-hashes --only-binary :all: -r requirements-build.txt" # no package without a matching hash, and nothing is built here
       - name: List the libraries the app is built from
         run: python tools/make_sbom.py "${{ matrix.sbom }}"
       - run: python -m PyInstaller --noconfirm packaging/dj-toolkit.spec

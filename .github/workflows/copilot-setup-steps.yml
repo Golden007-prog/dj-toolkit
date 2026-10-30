@@ -25,7 +25,7 @@ jobs:
           python-version: "3.12"
           cache: pip
           cache-dependency-path: requirements*.txt
-      - run: python -m pip install --require-hashes -r requirements-dev.txt # fails unless every package has a hash and its file matches
+      - run: "python -m pip install --require-hashes --only-binary :all: -r requirements-dev.txt" # no package without a matching hash, and nothing is built here
       - name: Install the libraries Qt needs without a screen (Linux)
         run: |
           sudo apt-get update
