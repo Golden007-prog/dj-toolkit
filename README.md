@@ -1,0 +1,1 @@
+Pictures for pull request descriptions (GitHub's own image upload can't be used from a script). Nothing here is part of the app or the site. Each pull request has a folder; a description links its pictures by commit.
