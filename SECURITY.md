@@ -2,7 +2,8 @@
 
 ## Report a problem privately
 
-Please don't open a public issue. Use GitHub's private reporting instead: open the repository's **Security** tab
+Please don't open a public issue. Use GitHub's private reporting instead: open
+[the report form](https://github.com/tomgreef/dj-toolkit/security/advisories/new), or the repository's **Security** tab
 and choose **Report a vulnerability**. You'll get a reply within a week. If the problem is real, it gets fixed,
 you get credit if you want it, and an advisory is published.
 
@@ -44,8 +45,14 @@ The latest release, and `main`.
   moderate severity or worse can't merge.
 - **Protected `main`:** changes arrive by pull request, a code owner approves, CI must pass, and published release
   tags can't be moved ([GOVERNANCE.md](GOVERNANCE.md)).
-- **Least privilege in CI:** workflows get a read-only token unless a job asks for more, never keep the checkout's
-  credentials, and use only GitHub's own actions (the one exception is OpenSSF Scorecard's, pinned to a commit).
+- **Least privilege in CI:** workflows get a read-only token unless a job asks for more and never keep the checkout's
+  credentials. They use actions from GitHub and Dependabot, plus two security tools (OpenSSF Scorecard and zizmor),
+  and every action is pinned to a full commit, which a test checks.
+- **The workflows are checked too:** zizmor (security mistakes) and actionlint (syntax) run on every pull request, and
+  a finding fails the build ([docs/maintaining.md](docs/maintaining.md)).
+- **Dependencies are pinned and checked:** the Python requirements pin every package with a hash and install from
+  ready-made wheels only; the website's packages install without running their scripts; and a check fails when anyone
+  but Dependabot or the owner changes a dependency file.
 
 ## For contributors
 
