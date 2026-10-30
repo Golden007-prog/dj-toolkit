@@ -235,6 +235,12 @@ QDoubleSpinBox#bpm::up-button, QDoubleSpinBox#bpm::down-button {{ width: 0px; he
 QComboBox::drop-down {{ border: none; width: 24px; }}
 QComboBox QAbstractItemView {{ background: {c.panel}; border: 1px solid {c.border_strong}; border-radius: {R_CONTROL}px;
   selection-background-color: {c.select}; selection-color: {c.text}; outline: none; padding: 4px; }}
+QMenu {{ background: {c.panel}; border: 1px solid {c.border_strong}; border-radius: {R_CONTROL}px; color: {c.text};
+  padding: 4px; }}
+QMenu::item {{ padding: 6px 24px; border-radius: {R_CONTROL}px; }}
+QMenu::item:selected {{ background: {c.hover}; color: {c.text}; }}
+QMenu::item:disabled {{ color: {c.muted}; }}
+QMenu::separator {{ height: 1px; background: {c.border}; margin: 4px 10px; }}
 QPushButton {{ background: {c.panel}; border: 1px solid {c.border_strong}; border-radius: {R_CONTROL}px;
   padding: 8px 16px; font-weight: 500; }}
 QPushButton:hover {{ background: {c.hover}; }}

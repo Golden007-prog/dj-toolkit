@@ -322,3 +322,37 @@ def test_callback_port_unchanged_on_cancel(app):
     with patch("djtoolkit.ui.sync_tab.QInputDialog.getInt", return_value=(8888, False)):
         t._set_callback_port()
         assert t.s.callback_port == 8888
+
+
+def test_menu_has_opaque_background(app):
+    from PySide6.QtWidgets import QMenu
+
+    from djtoolkit.ui import theme
+
+    menu = QMenu()
+
+    for mode in ("dark", "light"):
+        theme.apply(app, mode)
+        bg_color = menu.palette().window().color()
+        assert bg_color.alpha() == 255
+
+
+def test_a_disabled_menu_entry_looks_disabled(app):
+    from PySide6.QtGui import QColor
+    from PySide6.QtWidgets import QMenu
+
+    def ink(img, rect, bg):  # how far a row's pixels sit from the background: its text
+        pixels = (
+            img.pixelColor(x, y) for x in range(rect.left(), rect.right()) for y in range(rect.top(), rect.bottom())
+        )
+        return sum(abs(p.red() - bg.red()) + abs(p.green() - bg.green()) + abs(p.blue() - bg.blue()) for p in pixels)
+
+    for mode in ("dark", "light"):
+        theme.apply(app, mode)
+        menu = QMenu()
+        on, off = menu.addAction("Same words"), menu.addAction("Same words")
+        off.setEnabled(False)
+        img, bg = menu.grab().toImage(), QColor(theme.P.panel)
+        loud, quiet = ink(img, menu.actionGeometry(on), bg), ink(img, menu.actionGeometry(off), bg)
+        assert loud > quiet > 0  # the disabled entry is quieter than the others, and still legible
+    theme.apply(app, "dark", theme.DEFAULT_ACCENT)
