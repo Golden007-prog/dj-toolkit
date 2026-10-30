@@ -135,6 +135,10 @@ def test_the_dependency_guard_watches_every_dependency_file_and_cannot_be_edited
     flow = (GITHUB / "workflows" / "dependency-guard.yml").read_text("utf8")
     watched = re.search(r'^\s+deps="([^"]+)"$', flow, re.M).group(1).split()
     assert sorted(watched) == _dependency_files(), "the guard must watch exactly the files CODEOWNERS leaves unowned"
+    folders = re.search(r'^\s+dirs="([^"]+)"', flow, re.M)
+    assert folders and folders.group(1).split() == ["tools/deps/"] and (ROOT / "tools" / "deps").is_dir(), (
+        "the guard must watch the lists the requirements are built from"
+    )
     assert "pull_request_target" in flow, "it must run from main, so a pull request can't change what it checks"
     assert "actions/checkout" not in flow, "it must never check out the pull request's code"
     assert 'context="Dependency files"' in flow

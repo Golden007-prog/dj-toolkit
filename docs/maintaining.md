@@ -38,7 +38,8 @@ its minor and patch updates. [`dependency-guard.yml`](../.github/workflows/depen
 every pull request it posts a status called **Dependency files**, which fails when anyone but Dependabot or the owner
 changed one of those files. A new dependency comes through an issue and the owner, never inside another change.
 The short lists those files are built from, `tools/deps/*.in` ([Requirement hashes](#requirement-hashes)), do have an
-owner: choosing a package needs the owner's approval.
+owner, and the guard watches the folder too: choosing a package needs the owner's approval, and the check fails for
+anyone else who changes one.
 
 The guard runs from `main` and never checks out the pull request, so the pull request can't change what it checks. It
 posts the status through the API on the pull request's last commit, because a check from `pull_request_target` isn't

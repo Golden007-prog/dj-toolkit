@@ -36,6 +36,7 @@ jobs:
           set -euo pipefail
           [[ "$PR" =~ ^[0-9]+$ ]] || { echo "Not a pull request number."; exit 1; }
           deps="requirements.txt requirements-dev.txt requirements-build.txt website/package.json website/package-lock.json"
+          dirs="tools/deps/" # the lists the requirements files are built from: a change here chooses the packages
           pr=$(gh api "repos/$REPO/pulls/$PR")
           head=$(jq -r .head.sha <<< "$pr")
           author=$(jq -r .user.login <<< "$pr")
@@ -44,6 +45,9 @@ jobs:
           for file in $(gh api --paginate "repos/$REPO/pulls/$PR/files" --jq '.[] | .filename, (.previous_filename // empty)'); do
             for dep in $deps; do
               if [ "$file" = "$dep" ]; then touched="$touched $file"; fi
+            done
+            for dir in $dirs; do
+              case "$file" in "$dir"*) touched="$touched $file" ;; esac
             done
           done
           if [ -z "$touched" ]; then
