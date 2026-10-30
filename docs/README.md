@@ -13,5 +13,6 @@ Short on purpose. Read the one you need, and stop when you know enough.
 | [maintaining.md](maintaining.md) | You triage, review or merge: the rules on `main`, Dependabot, the monthly upgrades |
 | [releasing.md](releasing.md) | You're publishing a new version |
 | [ux/](ux/README.md) | You're changing anything a user sees or reads: persona, voice, decisions |
+| [dependencies.md](dependencies.md) | You're adding a package, or want to know why one is installed: each has a row with its reason, licence and source |
 
 The rules every change follows are in [AGENTS.md](../AGENTS.md), for people and AI agents alike.

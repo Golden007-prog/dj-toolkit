@@ -80,6 +80,7 @@ Each one exists because something went wrong or the owner asked for it. The righ
 | **No network in tests.** Spotify and GitHub are faked (see `tests/test_spotify.py`, `tests/test_feedback.py`). The app fetches nothing until a page needs it. | `tests/conftest.py` |
 | **Repo hygiene.** No secrets, `.env` files, tokens or personal paths (`C:\Users\<you>\…`) in the repo; no file over 800 KB; links between docs must resolve. | `test_guardrails.py`, pre-commit |
 | **Changes land by pull request.** CI must be green for everyone, and a code owner approves ([GOVERNANCE.md](GOVERNANCE.md)). Open the pull request and stop: never merge your own unless the owner asks. Only Dependabot's minor and patch updates merge themselves; majors go to Copilot once a month and wait for the owner ([docs/maintaining.md](docs/maintaining.md)). | rulesets on `main`, `test_repo_rules.py` |
+| **Dependencies.** A new package comes through its own issue and pull request, which the owner approves: never inside another change. That pull request adds its row to [docs/dependencies.md](docs/dependencies.md): reason, licence, publisher and source, date checked. | `Dependency files` check, `test_repo_rules.py` |
 
 If a rule is wrong, change the rule, its doc and its test together in one pull request, and say why.
 Never weaken, skip or delete a test to get a green run. The `KNOWN_COPY_DEBT` list in `test_guardrails.py` only shrinks.
