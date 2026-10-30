@@ -14,6 +14,11 @@ and versions follow [Semantic Versioning](https://semver.org/). Each release's s
   materials), so a company or a security scanner can see what the download is made of. It says what it leaves out in
   [Check a download](https://github.com/tomgreef/dj-toolkit/blob/main/docs/releasing.md#check-a-download).
 
+### Fixed
+
+- The **More** menu on the Spotify page is readable in the Daylight theme: its background and text follow the theme, and
+  the entry that is switched off looks switched off.
+
 ## [0.1.1] - 2026-10-29
 
 ### Changed

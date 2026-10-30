@@ -311,3 +311,24 @@ def test_menu_has_opaque_background(app):
         theme.apply(app, mode)
         bg_color = menu.palette().window().color()
         assert bg_color.alpha() == 255
+
+
+def test_a_disabled_menu_entry_looks_disabled(app):
+    from PySide6.QtGui import QColor
+    from PySide6.QtWidgets import QMenu
+
+    def ink(img, rect, bg):  # how far a row's pixels sit from the background: its text
+        pixels = (
+            img.pixelColor(x, y) for x in range(rect.left(), rect.right()) for y in range(rect.top(), rect.bottom())
+        )
+        return sum(abs(p.red() - bg.red()) + abs(p.green() - bg.green()) + abs(p.blue() - bg.blue()) for p in pixels)
+
+    for mode in ("dark", "light"):
+        theme.apply(app, mode)
+        menu = QMenu()
+        on, off = menu.addAction("Same words"), menu.addAction("Same words")
+        off.setEnabled(False)
+        img, bg = menu.grab().toImage(), QColor(theme.P.panel)
+        loud, quiet = ink(img, menu.actionGeometry(on), bg), ink(img, menu.actionGeometry(off), bg)
+        assert loud > quiet > 0  # the disabled entry is quieter than the others, and still legible
+    theme.apply(app, "dark", theme.DEFAULT_ACCENT)
