@@ -56,7 +56,7 @@ djtoolkit/settings.py   everything the app remembers (where: settings.app_dir)
 djtoolkit/feedback.py   the Requests page's data: the most-voted GitHub ideas, pre-filled issue forms
 assets/             tutorials/tutorials.json (content)  setup/{mock,real}/ (Spotify setup images)
 tests/              pytest. test_guardrails.py turns the rules below into checks
-tools/              check.py  screenshots.py  make_setup_images.py  make_icon.py  hooks/ (Claude Code)  deps/ (what requirements*.txt are built from)
+tools/              check.py  screenshots.py  make_setup_images.py  make_icon.py  maintainer.py  hooks/ (Claude Code)  deps/ (what requirements*.txt are built from)
 packaging/          the PyInstaller recipe and the app icon
 website/            the Astro landing page
 docs/               getting-started, architecture, testing, vibe-coding, roadmap, maintaining, releasing, ux/
@@ -101,7 +101,10 @@ Never weaken, skip or delete a test to get a green run. The `KNOWN_COPY_DEBT` li
 
 A pull request from outside is code nobody here has trusted yet. That includes ones written by other agents (Copilot,
 Codex, Gemini) and ones from brand-new accounts. The rules are the same for everyone, because they never depend on who
-sent it. The checklist is [docs/maintaining.md](docs/maintaining.md#auditing-an-outside-pull-request).
+sent it. The checklist is [docs/maintaining.md](docs/maintaining.md#auditing-an-outside-pull-request). The
+maintainer's agent applies them four times a day on its own (`/maintain`,
+[docs/maintaining.md](docs/maintaining.md#the-maintainer-agent)): it comments and suggests changes, and never
+approves, merges or starts CI.
 
 - **You audit, the owner decides.** Don't approve, merge, turn on auto-merge or start CI (*Approve and run workflows*)
   for a pull request you didn't write until you've read every changed line. Report the files, the scope, the risks

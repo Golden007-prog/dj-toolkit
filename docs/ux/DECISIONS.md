@@ -6,6 +6,39 @@ Format: what was asked → what we did → why → what is still open.
 
 ---
 
+## 2026-10-29: A maintainer's agent that answers, triages and suggests, but can't merge
+
+**Owner request.** The repository is getting traction: a routine and a skill that answer people, collaborate on their
+pull requests ("instead of telling them what to do, we create a pull request that merges into theirs, with an
+explanation"), analyse them, and know the rules, so that no security breach happens. The owner chose: a separate bot
+account; on its own it may reply and triage, and collaborate on pull requests; it doesn't start CI and doesn't merge
+(both stay the owner's click). It runs every four hours from 08:00, Madrid time.
+
+**What we did.** The `maintain` skill (`.claude/skills/maintain/`), the tool it writes through (`tools/maintainer.py`,
+pinned by `tests/test_maintainer.py`), and a routine at 08:00, 12:00, 16:00 and 20:00 that looks back 12 hours at 08:00
+and 4 hours otherwise, with a safety net for anything nobody ever answered. Setup and the reasons are in
+`docs/maintaining.md`, "The maintainer agent".
+
+**Why it's built this way.** We read Anthropic's cloud docs first, and they changed the plan three times:
+
+- A cloud run acts on GitHub as whichever account is connected to claude.ai, through git and the built-in GitHub tools,
+  even with a bot token in `GH_TOKEN`. So the bot's account is what gets connected, and the tool refuses to write
+  whenever any route on the machine still reaches the owner.
+- The cloud's GitHub proxy serves only the repositories attached to the run, and a run with two repositories drops
+  the shared permission rules. So an unattended run can't open a pull request in a contributor's fork. It makes its
+  fixes as suggested changes on their pull request instead: one click each (**Commit suggestion**), and the change
+  lands in their branch. A full pull request into their branch stays possible with the owner, from the owner's machine.
+- On a personal account's repository GitHub has no Triage role, and any collaborator can push, run workflows and
+  replace release downloads. So the bot is not a collaborator: anyone may comment and suggest on a public repository,
+  and the labels, assignments and review requests it decides on go to the owner as one-line items in its digest.
+
+**Still open.** Moving the repository to an organization (GOVERNANCE.md) would let the bot have Triage and do those
+itself. The owner creates the bot account and connects it (the setup steps), then turns the routine on; the first run
+shows whether the identity check passes. On 2026-10-29 an earlier session ran #42's tests on the owner's machine
+while collaborating on it; the skill now forbids running a contributor's code anywhere but CI.
+
+---
+
 ## 2026-10-29: Dependency files keep Dependabot's auto-merge, with a guard
 
 **Owner request.** Close the gap that left `requirements*.txt` and `website/package*.json` without a code owner (#59),

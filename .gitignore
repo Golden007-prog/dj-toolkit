@@ -43,4 +43,5 @@ desktop.ini
 .claude/skills/*
 !.claude/skills/SOURCES.txt
 !.claude/skills/check/
+!.claude/skills/maintain/
 !.claude/skills/screenshots/

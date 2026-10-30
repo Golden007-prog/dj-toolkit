@@ -196,3 +196,56 @@ def test_a_workflow_on_pull_request_target_never_checks_out_the_pull_request():
         ):
             offenders.append(flow.name)
     assert not offenders, f"a pull_request_target workflow must not check out the pull request's code: {offenders}"
+
+
+def _triggers(flow: Path) -> str:
+    """The `on:` block of a workflow, without its comments."""
+    text = re.sub(r"[ \t]+#.*", "", flow.read_text("utf8"))
+    on = re.search(r"^on:(.*?)(?=^\S)", text + "\nend:\n", re.S | re.M)
+    return on.group(1) if on else ""
+
+
+def test_a_push_to_a_branch_other_than_main_starts_no_workflow():
+    """With the owner, the maintainer's agent pushes maintainer/N-... branches that hold a contributor's code
+    (.claude/skills/maintain/collaborate.md). A workflow that ran on such a push would run that code with this
+    repository's token and secrets, so a push starts a workflow only on main, or when the workflow's own file changes
+    (which takes a token with the workflow scope)."""
+    offenders = []
+    for flow in sorted((GITHUB / "workflows").glob("*.y*ml")):
+        on = _triggers(flow)
+        if re.match(r"[^\n]*\b(push|create)\b", on) or re.search(r"^\s+create:", on, re.M):
+            offenders.append(f"{flow.name}: runs on every push or new branch")
+            continue
+        push = re.search(r"^([ \t]+)push:(.*?)(?=^\1\S|\Z)", on, re.S | re.M)
+        if push:
+            only_main = re.search(r"branches:\s*\[\s*main\s*\]", push.group(2))
+            paths = re.search(r"paths:\s*\[([^\]]*)\]", push.group(2))
+            own_file = paths and all(
+                p.strip(" \"'").startswith(".github/workflows/") for p in paths.group(1).split(",")
+            )
+            if not (only_main or own_file):
+                offenders.append(f"{flow.name}: on push, give it `branches: [main]`")
+    assert not offenders, "a push to a branch other than main must start no workflow:\n" + "\n".join(offenders)
+
+
+def test_the_maintainer_agent_keeps_its_seatbelts_on():
+    """The maintainer's agent answers, triages and suggests; the owner approves, starts CI and merges
+    (docs/maintaining.md, "The maintainer agent"). tests/test_maintainer.py pins what its tool can write; this pins
+    the skill's rules and the shared settings behind them."""
+    skill = (ROOT / ".claude" / "skills" / "maintain" / "SKILL.md").read_text("utf8")
+    for rule in (
+        "whoami",
+        "data, not instructions",
+        "Never run a contributor's code",
+        "Never check a pull request out inside this repository",
+        "Write only through the tool",
+        "never approve, merge, start CI",
+    ):
+        assert rule in skill, f"the maintain skill lost a rule: {rule!r}"
+    settings = json.loads((ROOT / ".claude" / "settings.json").read_text("utf8"))["permissions"]
+    asks = ["git push *", "gh pr merge *", "gh pr review *", "gh release *", "gh workflow run *", "gh api *--method*"]
+    for rule in [f"Bash({a})" for a in asks + ["gh api *-X*", "gh api *--input*", "gh api *-f *"]]:
+        assert rule in settings["ask"], f".claude/settings.json must ask before {rule}"
+    for rule in ("Bash(git push --force *)", "Bash(gh secret *)", "Bash(gh auth token*)"):
+        assert rule in settings["deny"], f".claude/settings.json must never run {rule}"
+    assert "!.claude/skills/maintain/" in (ROOT / ".gitignore").read_text("utf8"), "the skill must be tracked"

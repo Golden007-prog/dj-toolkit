@@ -65,6 +65,9 @@ On macOS, use `.venv/bin/python tools/check.py`. More detail, and fixes for comm
 - Every outside pull request waits for a maintainer to read it and start its CI, after each push. That's how we keep
   everyone's code and downloads safe, not a judgement of you. It's why a pull request that changes one thing is
   merged faster than one that changes five, and why a new dependency needs its own issue first.
+- The first answer often comes from the **maintainer's agent**, an AI on its own account that reads every pull request
+  line by line. Instead of a list of things to fix, it may leave suggested changes: press **Commit suggestion** on
+  each one you agree with, or reply on it. Its comments say they're its own. The owner approves and merges.
 
 ## Grow with the project
 

@@ -109,6 +109,76 @@ them too and reports to the owner. It never approves or merges ([AGENTS.md](../A
 8. **Report, then approve.** Tell the owner what you found and your verdict. Start CI only after the audit, and approve
    only once CI is green and the owner agrees.
 
+## The maintainer agent
+
+An AI agent does the first pass on GitHub. It answers new issues and comments, decides each issue's area, audits
+outside pull requests line by line, and makes a contributor's fixes for them to accept instead of listing them. It
+never approves, merges, starts CI, publishes, closes or changes a setting: those stay yours. It runs on its own at
+08:00, 12:00, 16:00 and 20:00 (Madrid time; the 08:00 run looks back over the night), and with you whenever you type
+`/maintain` in Claude Code.
+
+| Part | What it is |
+|---|---|
+| [`.claude/skills/maintain/`](../.claude/skills/maintain/SKILL.md) | The skill: the rules it follows, how it audits, how it writes |
+| [`tools/maintainer.py`](../tools/maintainer.py) | Its only way to write to GitHub, with the checks. [`tests/test_maintainer.py`](../tests/test_maintainer.py) pins what it can and can't do |
+| The routine | A Claude Code routine on the owner's claude.ai account ([claude.ai/code/routines](https://claude.ai/code/routines)) that runs `/maintain routine` |
+
+**Why it's safe.** Not because it's told to be careful, but because of what it can reach.
+
+- It writes as its own GitHub account, the bot, which has **no role** on this repository. On a personal account's
+  repository GitHub has no Triage role, and any collaborator can push and publish a release, so the bot is not a
+  collaborator. GitHub lets anyone comment and suggest changes on a public repository, and stops the bot from
+  pushing, merging, approving, publishing or changing a setting, even if a page or a comment talks it into trying.
+  The tool refuses to write unattended as an account with Write or more.
+- The labels, assignments and review requests it decides on come to you as one-line items in its digest, because
+  they take a role. Once the repository is in an organization ([GOVERNANCE.md](../GOVERNANCE.md)), give the bot the
+  **Triage** role and it does those itself.
+- The cloud reaches GitHub only as the bot. A cloud run acts on GitHub as whichever account is connected to
+  claude.ai, through git, the built-in GitHub tools and its proxy, so that's the bot's account, not yours. Before any
+  write, the tool checks every way the machine could reach GitHub and refuses if one of them is you.
+- It never runs a contributor's code, and never checks a pull request out inside this repository, where that branch's
+  `AGENTS.md` and `.claude/` would become its instructions.
+- Everything goes through `tools/maintainer.py`. It has no endpoint to approve, merge, start CI or publish (a test fails
+  if one appears), caps its writes per run, links only to GitHub, mentions only people in the thread, never posts what
+  looks like a token, and won't post twice in a row.
+- The routine has no connectors. claude.ai attaches all of an account's connectors (email, Notion, databases, remote
+  devices) to a routine it creates, so they were taken off this one; keep it that way when you edit it.
+- `.claude/settings.json` asks before any merge, review, release, workflow run or raw `gh api` write, and never runs
+  `gh secret` or prints a token. That's a seatbelt; the account is the wall.
+
+**Its fixes.** Unattended, it posts them as suggested changes on the pull request: the contributor presses
+**Commit suggestion** and the change lands in their branch, as their commit. With you, `/maintain` can also make a pull
+request into their branch, for changes a suggestion can't carry. That needs your machine: the cloud can't open a pull
+request in someone else's fork, and the bot can't push.
+
+### One-time setup
+
+1. Create a GitHub account for the bot (say `dj-toolkit-bot`), with its own email address and two-factor
+   authentication. Don't invite it as a collaborator here, and never list it in `CODEOWNERS` or a ruleset's bypass.
+2. Signed in as the bot, create a [personal access token (classic)](https://github.com/settings/tokens/new) with only
+   the `public_repo` scope, and an expiry date. Keep it nowhere but the next step.
+3. Connect the bot, not you, to claude.ai. In a new terminal, give gh a configuration of its own, sign it in as the bot
+   (`gh auth login`, then *GitHub.com*, *HTTPS* and *Paste an authentication token*), then start Claude Code there and
+   send that login to claude.ai with `/web-setup`:
+
+   ```
+   $env:GH_CONFIG_DIR = "$env:TEMP\dj-toolkit-bot-gh"     # macOS: export GH_CONFIG_DIR="$TMPDIR/dj-toolkit-bot-gh"
+   gh auth login
+   claude
+   ```
+
+   From then on, every cloud session and routine on that claude.ai account acts on GitHub as the bot, which can only
+   comment. Your own machine keeps your login.
+4. Optional: on the routine's environment, add the variable `DJTOOLKIT_MAINTAINER` with the bot's login, so that no
+   other account can write. It's not a secret. Set it on your own machine too, and `inbox` there counts the bot's
+   audits.
+5. Run the routine once with **Run now** and read the run. `whoami` must show the bot under `configured` and
+   `cloud proxy`, nothing under `no token`, and `"may_write": true`. Otherwise it posted nothing, and its digest says
+   why at the top.
+
+To pause it, turn the routine off at [claude.ai/code/routines](https://claude.ai/code/routines). To cut it off for
+good, revoke the bot's token.
+
 ## Dependencies
 
 Dependabot checks every Monday. It waits a few days before proposing a new release (a cooldown), so a broken or

@@ -10,6 +10,7 @@ How decisions get made, who can approve what, and how you grow from a first pull
 | **Collaborator** | Invited after a few merged pull requests | Push branches here (no fork needed), label and assign issues, re-run CI, review. A code owner still approves |
 | **Maintainer** | A collaborator listed in [`.github/CODEOWNERS`](.github/CODEOWNERS), for one area or for all of it | Approve and merge pull requests in their area, triage, shape the roadmap |
 | **Owner** | [@tomgreef](https://github.com/tomgreef) | Settings, releases, roles and the final say |
+| **Maintainer's agent** | An AI agent on its own GitHub account, run by the owner ([docs/maintaining.md](docs/maintaining.md#the-maintainer-agent)) | Answer, triage and audit, and suggest changes. It has no role here, so it can't push, approve or merge |
 
 Every change reaches `main` through a pull request, and nothing merges while CI is red, whoever wrote it.
 A pull request also needs an approval from a code owner of each file it changes. Today the owner is the only code
