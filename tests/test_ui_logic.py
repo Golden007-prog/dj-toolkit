@@ -298,3 +298,16 @@ def test_floating_panels_paint_a_card_with_a_shadow_below_it(app):
         edge = img.pixelColor(img.width() // 2, img.height() - b - 3 + 6)  # just under the card's bottom edge
         assert edge.alpha() > 0  # the soft shadow is painted there, not left empty
     theme.apply(app, "dark", theme.DEFAULT_ACCENT)
+
+
+def test_menu_has_opaque_background(app):
+    from PySide6.QtWidgets import QMenu
+
+    from djtoolkit.ui import theme
+
+    menu = QMenu()
+
+    for mode in ("dark", "light"):
+        theme.apply(app, mode)
+        bg_color = menu.palette().window().color()
+        assert bg_color.alpha() == 255
