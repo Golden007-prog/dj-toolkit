@@ -131,6 +131,47 @@ def test_every_pre_commit_hook_repository_is_pinned_to_a_full_commit_sha():
     )
 
 
+def test_every_python_requirement_install_checks_hashes():
+    installs = []
+    unchecked = []
+    for flow in sorted((GITHUB / "workflows").glob("*.yml")):
+        for number, line in enumerate(flow.read_text("utf8").splitlines(), 1):
+            code = line.split("#", 1)[0]
+            if re.search(r"\bpip\s+install\b", code) and re.search(r"\s-r\s*requirements[\w-]*\.txt\b", code):
+                installs.append(f"{flow.name}:{number}")
+                if not re.search(r"(?<![\w-])--require-hashes(?![\w-])", code):
+                    unchecked.append(f"{flow.name}:{number}")
+    assert installs, "no `pip install -r requirements...` found: have the workflows changed shape?"
+    assert not unchecked, (
+        "add `--require-hashes` to each `pip install -r requirements...` below "
+        "(docs/maintaining.md, 'Requirement hashes'):\n" + "\n".join(unchecked)
+    )
+
+
+def test_every_python_package_has_a_sha256_hash():
+    unhashed = []
+    for name in ("requirements.txt", "requirements-dev.txt", "requirements-build.txt"):
+        package = None
+        has_hash = False
+        for number, line in enumerate((ROOT / name).read_text("utf8").splitlines(), 1):
+            code = line.split("#", 1)[0].strip().rstrip("\\").strip()
+            if not code:
+                continue
+            if code.startswith("--hash="):
+                has_hash |= bool(re.fullmatch(r"--hash=sha256:[0-9a-fA-F]{64}", code))
+            elif not code.startswith("-"):
+                if package and not has_hash:
+                    unhashed.append(package)
+                package = f"{name}:{number}: {code}"
+                has_hash = False
+        if package and not has_hash:
+            unhashed.append(package)
+    assert not unhashed, (
+        "regenerate the requirements so every package below has at least one `--hash=sha256:` line "
+        "(docs/maintaining.md, 'Requirement hashes'):\n" + "\n".join(unhashed)
+    )
+
+
 def test_the_dependency_guard_watches_every_dependency_file_and_cannot_be_edited_by_a_pull_request():
     flow = (GITHUB / "workflows" / "dependency-guard.yml").read_text("utf8")
     watched = re.search(r'^\s+deps="([^"]+)"$', flow, re.M).group(1).split()
