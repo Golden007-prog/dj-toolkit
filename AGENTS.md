@@ -56,7 +56,7 @@ djtoolkit/settings.py   everything the app remembers (where: settings.app_dir)
 djtoolkit/feedback.py   the Requests page's data: the most-voted GitHub ideas, pre-filled issue forms
 assets/             tutorials/tutorials.json (content)  setup/{mock,real}/ (Spotify setup images)
 tests/              pytest. test_guardrails.py turns the rules below into checks
-tools/              check.py  screenshots.py  make_setup_images.py  make_icon.py  hooks/ (Claude Code)
+tools/              check.py  screenshots.py  make_setup_images.py  make_icon.py  hooks/ (Claude Code)  deps/ (what requirements*.txt are built from)
 packaging/          the PyInstaller recipe and the app icon
 website/            the Astro landing page
 docs/               getting-started, architecture, testing, vibe-coding, roadmap, maintaining, releasing, ux/

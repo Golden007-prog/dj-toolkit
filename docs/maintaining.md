@@ -37,6 +37,8 @@ pin: to move it, change `VERSION` and `SHA256` together, taking the checksum fro
 its minor and patch updates. [`dependency-guard.yml`](../.github/workflows/dependency-guard.yml) makes that safe: on
 every pull request it posts a status called **Dependency files**, which fails when anyone but Dependabot or the owner
 changed one of those files. A new dependency comes through an issue and the owner, never inside another change.
+The short lists those files are built from, `tools/deps/*.in` ([Requirement hashes](#requirement-hashes)), do have an
+owner: choosing a package needs the owner's approval.
 
 The guard runs from `main` and never checks out the pull request, so the pull request can't change what it checks. It
 posts the status through the API on the pull request's last commit, because a check from `pull_request_target` isn't
@@ -113,7 +115,8 @@ hijacked version has time to be caught. Security fixes don't wait.
 
 - **Minor and patch updates** arrive as one pull request per ecosystem (Python, the website, Actions).
   [`dependabot-auto-merge.yml`](../.github/workflows/dependabot-auto-merge.yml) approves them and turns on
-  auto-merge, so they merge once CI is green. Nothing to do unless CI fails.
+  auto-merge, so they merge once CI is green. Nothing to do unless CI fails. A Python update that needs a package the
+  requirements files don't list yet fails with *Hashes are required*: see [Requirement hashes](#requirement-hashes).
 - **Major updates** arrive one per pull request, labelled `major update`, and wait. On the last day of each month,
   [`major-updates.yml`](../.github/workflows/major-updates.yml) opens an issue for each one and assigns it to
   Copilot, which reads the migration guide and opens a pull request. Copilot is an AI agent that reads pages from the
@@ -138,6 +141,50 @@ gh api repos/astral-sh/ruff-pre-commit/git/ref/tags/vX.Y.Z --jq .object
 ```
 
 If `type` is `tag`, run `gh api repos/astral-sh/ruff-pre-commit/git/tags/<sha> --jq .object.sha` to get the commit.
+
+### Requirement hashes
+
+`requirements.txt`, `requirements-dev.txt` and `requirements-build.txt` pin every package they install, the ones nobody
+chose included, to one version and to a hash of each file of that version. CI, the release and Copilot's setup install
+with `pip install --require-hashes`, which stops when a package has no hash or a downloaded file doesn't match. A
+tampered download, or an index that serves another file under the same version, fails the run instead of reaching a
+build. (A plain `pip install -r` on your own machine checks the hashes too.)
+
+`uv pip compile` writes the three files from the short lists in `tools/deps/` (`app.in`, `dev.in`, `build.in`: the
+packages someone chose, by name), and each file's header records the command. Each file is complete in itself and
+covers Windows, macOS and Linux: a package for one system only carries its marker (`; sys_platform == 'win32'`), and
+every package has the hash of every file of that version, because we can't know which wheel a machine will pick.
+The lists live in `tools/deps/` on purpose: Dependabot treats a `requirements*.in` file in the root as pip-compile's
+input and would rebuild the `.txt` beside it with pip-compile, on Linux, without the Windows and macOS packages.
+
+**Dependabot keeps the files current.** It changes a version and its hashes together, and a minor or patch update
+still merges once CI is green. It doesn't work out dependencies: when a new
+version needs a package the files don't list, or no longer needs one, the pull request fails with *Hashes are required
+in --require-hashes mode* and you regenerate (below) on its branch.
+
+**Regenerate** from the repository root, in this order, with [uv](https://docs.astral.sh/uv/) (a maintainer's tool, not
+a dependency of the project). `--no-build` makes uv read package metadata and never build anything:
+
+```
+uv pip compile tools/deps/app.in --universal --python-version 3.12 --generate-hashes --no-build -o requirements.txt
+uv pip compile tools/deps/dev.in -c requirements.txt --universal --python-version 3.12 --generate-hashes --no-build -o requirements-dev.txt
+uv pip compile tools/deps/build.in -c requirements.txt --universal --python-version 3.12 --generate-hashes --no-build -o requirements-build.txt
+```
+
+Versions and hashes already in a file stay as they are, so this only adds what is missing and drops what nothing needs
+any more. Then give each new package its row in [dependencies.md](dependencies.md). To move a package to a newer
+version yourself, add `--upgrade-package <name>` to the command for the file that lists it first (`requirements.txt`
+for anything the app needs, otherwise the dev or build one), then run the others as written. For a package that is new
+to the files, uv picks the newest version: read its date, the cooldown above doesn't apply. Never paste in the hashes
+pip prints when it refuses a package: they only say what happened to download.
+
+**Check the hashes yourself** (bash or zsh; for the other two files, swap `app.in` and `requirements.txt` for `dev.in`
+and `requirements-dev.txt`, then for `build.in` and `requirements-build.txt`). It asks PyPI for the hashes again and
+prints nothing when the file has exactly those:
+
+```
+diff <(grep -v '^ *#' requirements.txt) <(uv pip compile tools/deps/app.in -c requirements.txt --universal --python-version 3.12 --generate-hashes --no-build --no-annotate --no-header 2>/dev/null)
+```
 
 ### One-time setup: let the workflow assign Copilot
 

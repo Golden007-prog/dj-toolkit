@@ -1,0 +1,10 @@
+# What the app needs to run, by name. `uv pip compile` turns this into requirements.txt, which pins each package and
+# everything it installs to one version, with a hash for every file of that version (docs/maintaining.md, "Requirement
+# hashes"). Dependabot opens a pull request when a newer version is out, and CI tests it before anyone merges.
+PySide6
+librosa
+soundfile
+numpy
+mutagen
+requests
+imageio-ffmpeg

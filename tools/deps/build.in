@@ -1,0 +1,7 @@
+# What it takes to build the downloadable app (requirements-build.txt, see docs/releasing.md):
+#   .venv\Scripts\pip install -r requirements-build.txt
+#   .venv\Scripts\python -m PyInstaller --noconfirm packaging/dj-toolkit.spec
+-r app.in
+pyinstaller
+pyinstaller-hooks-contrib
+pillow

@@ -5,6 +5,9 @@
 #   (.github/workflows/major-updates.yml hands them to Copilot).
 # A new release waits a few days (cooldown) before it's proposed, so a broken or hijacked version can be caught first.
 # Security updates don't wait.
+# The Python files pin a hash for every package file, and Dependabot rewrites them along with each version. Keep any
+# requirements*.in file out of the root: Dependabot would treat the .txt beside it as pip-compile output and rebuild it
+# itself. That is why the files they are built from live in tools/deps/ (docs/maintaining.md, "Requirement hashes").
 version: 2
 updates:
   - package-ecosystem: pip
