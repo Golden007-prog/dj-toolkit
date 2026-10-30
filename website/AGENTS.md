@@ -7,7 +7,7 @@ The landing page for DJ Toolkit: one static page built with Astro, published to 
 
 | To | Run |
 |---|---|
-| Install once | `npm ci` |
+| Install once | `npm ci --ignore-scripts` (a package can hide code in an install script, and the build needs none) |
 | Work on it | `npm run dev`, then open http://localhost:4321 |
 | Check it builds | `npm run build` (CI runs this on every pull request) |
 | See the production build | `npm run build` then `npm run preview` |

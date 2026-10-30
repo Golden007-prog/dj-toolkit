@@ -20,7 +20,9 @@ The app runs on your own computer, so the sensitive parts are few, and worth get
   music. Anything that makes it do so is in scope.
 - **The Requests page** reads public issue data from GitHub and opens links in your browser; it never handles a
   GitHub login. Anything that makes it do more is in scope.
-- **The downloads** are built in GitHub Actions from this repository's code. They aren't code-signed yet.
+- **The downloads** are built in GitHub Actions from this repository's code, and new releases carry a signed record
+  of where their files were built, plus checksums ([how to check](docs/releasing.md#check-a-download)). They
+  aren't code-signed yet.
 - **Dependencies** with known vulnerabilities in the versions pinned in the `requirements*.txt` files or
   `website/package-lock.json`.
 
@@ -43,7 +45,7 @@ The latest release, and `main`.
 - **Protected `main`:** changes arrive by pull request, a code owner approves, CI must pass, and published release
   tags can't be moved ([GOVERNANCE.md](GOVERNANCE.md)).
 - **Least privilege in CI:** workflows get a read-only token unless a job asks for more, never keep the checkout's
-  credentials, and use only GitHub's own actions.
+  credentials, and use only GitHub's own actions (the one exception is OpenSSF Scorecard's, pinned to a commit).
 
 ## For contributors
 

@@ -1,0 +1,52 @@
+# When an outside pull request says "Fixes #N" and issue N isn't assigned to its author, leave one comment: comment on
+# the issue and wait for the assignment (CONTRIBUTING.md, step 3). When it names no issue and changes more than docs,
+# leave one comment asking which issue it is for (step 1). It never closes, labels or blocks a pull request.
+# The decision is in tools/check_pr_assignment.py, which has tests.
+#
+# pull_request_target gives this job a token that can write to a pull request from a fork, so it must never check out
+# or run anything from the pull request. It fetches its script from main, whatever the pull request holds, and reads
+# the pull request only through the GitHub CLI. Don't add a checkout of the pull request here (docs/maintaining.md).
+# Like every pull_request_target workflow it runs from main, so a change to it takes effect only once it has merged.
+name: Pull request assignment
+
+on:
+  pull_request_target: # zizmor: ignore[dangerous-triggers] safe: it never checks out the pull request (see above)
+    types: [opened, reopened]
+  workflow_dispatch: # try it on a pull request that already exists
+    inputs:
+      pr:
+        description: Number of the pull request to check
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-assignment-${{ github.event.pull_request.number || inputs.pr }} # two runs never post twice
+
+jobs:
+  check:
+    name: Check the issue is assigned to the author
+    if: github.repository == 'tomgreef/dj-toolkit'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read # fetch the script
+      issues: read # who an issue is assigned to
+      pull-requests: write # the one comment
+    steps:
+      - name: Fetch the script from main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh api -H "Accept: application/vnd.github.raw+json" \
+            "repos/$REPO/contents/tools/check_pr_assignment.py?ref=main" > "$RUNNER_TEMP/check_pr_assignment.py"
+
+      - name: Check, and comment if it is not
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number || inputs.pr }}
+        run: python3 -I "$RUNNER_TEMP/check_pr_assignment.py"

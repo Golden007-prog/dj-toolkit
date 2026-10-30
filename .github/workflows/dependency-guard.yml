@@ -1,0 +1,60 @@
+# Reports a status called "Dependency files" on every pull request: it fails when anyone but Dependabot or the owner
+# changes a dependency file, because a harmful dependency is the easiest thing to hide in a pull request
+# (docs/maintaining.md, "Dependency files"). It runs from main (pull_request_target) and never checks out the pull
+# request, so the pull request can't change what it checks. The status is posted on the pull request's last commit
+# through the API, because a check from this trigger isn't attached to that commit.
+name: Dependency guard
+
+on:
+  pull_request_target: # zizmor: ignore[dangerous-triggers] safe: it never checks out the pull request (see above)
+    types: [opened, reopened, synchronize]
+  workflow_dispatch: # check a pull request that was open before this existed
+    inputs:
+      pr:
+        description: The pull request's number
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    name: Dependency files
+    if: github.repository == 'tomgreef/dj-toolkit'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pull-requests: read
+      statuses: write
+    steps:
+      - name: Report who changed the dependency files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number || inputs.pr }}
+        run: |
+          set -euo pipefail
+          [[ "$PR" =~ ^[0-9]+$ ]] || { echo "Not a pull request number."; exit 1; }
+          deps="requirements.txt requirements-dev.txt requirements-build.txt website/package.json website/package-lock.json"
+          pr=$(gh api "repos/$REPO/pulls/$PR")
+          head=$(jq -r .head.sha <<< "$pr")
+          author=$(jq -r .user.login <<< "$pr")
+          association=$(jq -r .author_association <<< "$pr")
+          touched=""
+          for file in $(gh api --paginate "repos/$REPO/pulls/$PR/files" --jq '.[] | .filename, (.previous_filename // empty)'); do
+            for dep in $deps; do
+              if [ "$file" = "$dep" ]; then touched="$touched $file"; fi
+            done
+          done
+          if [ -z "$touched" ]; then
+            state=success
+            description="No dependency file changed."
+          elif [ "$author" = "dependabot[bot]" ] || [ "$association" = "OWNER" ]; then
+            state=success
+            description="Dependency files changed by Dependabot or the owner."
+          else
+            state=failure
+            description="Only Dependabot or the owner changes dependency files. Open an issue for a new dependency first."
+          fi
+          echo "Pull request #$PR by $author ($association): $state. Dependency files changed:${touched:- none}" >> "$GITHUB_STEP_SUMMARY"
+          gh api --method POST "repos/$REPO/statuses/$head" -f state="$state" -f context="Dependency files" -f description="$description" > /dev/null

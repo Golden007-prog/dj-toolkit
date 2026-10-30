@@ -1,0 +1,6 @@
+# Everything a contributor needs: the app, plus tests, lint and the commit hooks (requirements-dev.txt).
+#   .venv\Scripts\pip install -r requirements-dev.txt
+-r app.in
+pytest
+ruff
+pre-commit

@@ -5,6 +5,8 @@
 
 # DJ Toolkit
 
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/tomgreef/dj-toolkit/badge)](https://scorecard.dev/viewer/?uri=github.com/tomgreef/dj-toolkit)
+
 Prep tools for working DJs. Free and open source, for Windows and macOS.
 
 - **Acapella prep.** Lock the beat grid on four beats at the chorus, mark where the vocal comes in, and export it
@@ -29,7 +31,8 @@ If Windows says it protected your PC, choose **More info**, then **Run anyway**.
 **macOS 12 or later (Apple silicon):** open `DJ-Toolkit-macOS.dmg` and drag DJ Toolkit into Applications.
 If macOS says it can't check the app, open **System Settings > Privacy & Security** and choose **Open Anyway**.
 
-The warnings appear because the app isn't signed with a paid certificate yet; all of its code is here.
+The warnings appear because the app isn't signed with a paid certificate yet; all of its code is here, and you can
+[check that a download was built from it](docs/releasing.md#check-a-download).
 Your settings and your Spotify login stay on your computer, exports are saved as new files, and your music files are
 never changed. How to use it: [docs/user-guide.md](docs/user-guide.md).
 Prefer to run it from source? [docs/getting-started.md](docs/getting-started.md) takes about five minutes.
@@ -40,6 +43,7 @@ DJs, designers, writers and developers are all welcome, and AI-assisted work is 
 
 | I want to | Read |
 |---|---|
+| Ask a question, or talk DJ | [Discussions](https://github.com/tomgreef/dj-toolkit/discussions) |
 | Vote on ideas, report a bug or make a first change | [CONTRIBUTING.md](CONTRIBUTING.md) |
 | Get it running for development | [docs/getting-started.md](docs/getting-started.md) |
 | Understand how it fits together | [docs/architecture.md](docs/architecture.md) |

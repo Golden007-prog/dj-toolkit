@@ -9,7 +9,7 @@ on:
     branches: [main]
     paths: ["djtoolkit/__init__.py", ".github/workflows/release.yml"]
   pull_request: # build and self-test (never publish) when a change could break the downloads
-    paths: ["packaging/**", "main.py", "requirements*.txt", "djtoolkit/paths.py", ".github/workflows/release.yml"]
+    paths: ["packaging/**", "main.py", "requirements*.txt", "djtoolkit/paths.py", "tools/make_sbom.py", ".github/workflows/release.yml"]
   workflow_dispatch:
 
 permissions:
@@ -24,7 +24,7 @@ jobs:
       tag: ${{ steps.version.outputs.tag }}
       publish: ${{ steps.version.outputs.publish }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - id: version
@@ -52,21 +52,25 @@ jobs:
           - os: windows-latest
             name: Windows
             asset: DJ-Toolkit-Windows.zip
+            sbom: DJ-Toolkit-Windows.cdx.json
           - os: macos-latest
             name: macOS
             asset: DJ-Toolkit-macOS.dmg
+            sbom: DJ-Toolkit-macOS.cdx.json
     runs-on: ${{ matrix.os }}
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.12"
           cache: pip
           cache-dependency-path: requirements*.txt
-      - run: python -m pip install -r requirements-build.txt
+      - run: python -m pip install --require-hashes -r requirements-build.txt # fails unless every package has a hash and its file matches
+      - name: List the libraries the app is built from
+        run: python tools/make_sbom.py "${{ matrix.sbom }}"
       - run: python -m PyInstaller --noconfirm packaging/dj-toolkit.spec
 
       - name: Check it starts, then zip it (Windows)
@@ -86,29 +90,43 @@ jobs:
           ln -s /Applications dmg/Applications
           hdiutil create -volname "DJ Toolkit" -srcfolder dmg -ov -format UDZO "${{ matrix.asset }}"
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ${{ matrix.asset }}
-          path: ${{ matrix.asset }}
+          path: |
+            ${{ matrix.asset }}
+            ${{ matrix.sbom }}
           if-no-files-found: error
           retention-days: 14
 
   publish:
     name: Publish ${{ needs.version.outputs.tag }}
     needs: [version, build]
-    if: needs.version.outputs.publish == 'true'
+    if: needs.version.outputs.publish == 'true' && github.repository == 'tomgreef/dj-toolkit' # not in a fork
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
       contents: write # create the release and its tag
       actions: write # start the website build: a release made by a workflow doesn't trigger other workflows
+      id-token: write # let GitHub sign that this run made the downloads (the attestation below)
+      attestations: write # keep that signed record with the repository
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           merge-multiple: true
+      - name: Record where the downloads came from
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: |
+            DJ-Toolkit-Windows.zip
+            DJ-Toolkit-macOS.dmg
+            DJ-Toolkit-Windows.cdx.json
+            DJ-Toolkit-macOS.cdx.json
+      - name: Write the checksums
+        run: sha256sum DJ-Toolkit-Windows.zip DJ-Toolkit-macOS.dmg DJ-Toolkit-Windows.cdx.json DJ-Toolkit-macOS.cdx.json > SHA256SUMS.txt
       - name: Create the release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -116,7 +134,8 @@ jobs:
         run: |
           # This version's section of CHANGELOG.md, then GitHub adds the merged pull requests and new contributors.
           awk -v v="${TAG#v}" 'index($0, "## [" v "]") == 1 { on = 1; next } on && /^## / { exit } on' CHANGELOG.md > notes.md
-          gh release create "$TAG" DJ-Toolkit-Windows.zip DJ-Toolkit-macOS.dmg --repo "$GITHUB_REPOSITORY" \
+          gh release create "$TAG" DJ-Toolkit-Windows.zip DJ-Toolkit-macOS.dmg SHA256SUMS.txt \
+            DJ-Toolkit-Windows.cdx.json DJ-Toolkit-macOS.cdx.json --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" --title "DJ Toolkit $TAG" --notes-file notes.md --generate-notes
       - name: Rebuild the website with the new download links
         env:

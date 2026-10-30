@@ -1,5 +1,8 @@
 blank_issues_enabled: true
 contact_links:
+  - name: Ask a question
+    url: https://github.com/tomgreef/dj-toolkit/discussions/categories/q-a
+    about: How does something work? Ask in Discussions, where the answer that helped gets marked. Issues are for things to do.
   - name: Vote on ideas
     url: https://github.com/tomgreef/dj-toolkit/issues?q=is%3Aissue+is%3Aopen+label%3Aidea+sort%3Areactions-%2B1-desc
     about: Every open idea, most-voted first. A thumbs-up reaction on an issue is a vote.

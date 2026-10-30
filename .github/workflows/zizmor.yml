@@ -1,0 +1,29 @@
+# Reads the workflow files for security mistakes (docs/maintaining.md): an action not pinned to a commit, a token with
+# more permission than a job needs, untrusted text in a script. CodeQL checks some of this; zizmor checks the rest.
+# A finding fails the run, and the job is required by the "Checks must pass" ruleset: fix it in the change that causes
+# it, or mark it `# zizmor: ignore[rule]` with the reason next to it (see pr-assignment.yml).
+name: Workflow security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  zizmor:
+    name: Workflow security (zizmor)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Look for mistakes in the workflows
+        uses: zizmorcore/zizmor-action@85b2b9fb8e3325e7a23d7d0a9d7ba5ae0f999e3e # v0.7.1
+        with:
+          advanced-security: false # not the Security tab: that needs a write token, and Dependabot's runs have none
+          annotations: true

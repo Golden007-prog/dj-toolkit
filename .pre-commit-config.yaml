@@ -1,15 +1,18 @@
 # Fast checks on every commit, after a one-time `.venv\Scripts\pre-commit install`.
 # CI runs these plus the full test suite (python tools/check.py), so skipping them only delays the feedback.
+# Each `rev` is a full commit SHA with its version in a comment, because a tag can be moved to other code and a
+# commit can't. To update one, see docs/maintaining.md.
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.17.3 # keep in step with ruff in requirements-dev.txt
+    # keep in step with ruff in requirements-dev.txt
+    rev: 25bcf95026b96e2dd3c0aec3090c3d6ef6ca2e6c # frozen: v0.17.3
     hooks:
       - id: ruff-check
         args: [--fix]
       - id: ruff-format
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c # frozen: v6.0.0
     hooks:
       - id: check-added-large-files
         args: [--maxkb=800]

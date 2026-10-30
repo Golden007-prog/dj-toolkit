@@ -15,6 +15,7 @@ export const links = {
   suggest: `${url}/issues/new?template=idea.yml`,
   bug: `${url}/issues/new?template=bug_report.yml`,
   ideas: `${url}/issues?q=is%3Aissue+is%3Aopen+label%3Aidea+sort%3Areactions-%2B1-desc`,
+  discussions: `${url}/discussions`,
   licence: `${url}/blob/main/LICENSE`,
 };
 
